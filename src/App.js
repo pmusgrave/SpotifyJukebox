@@ -6,7 +6,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            playlist: [1],
+            playlist: [],
         };
     }
 
@@ -21,9 +21,9 @@ class App extends Component {
                     <img src={logo} className="App-logo" alt="logo" />
                     <h1 className="App-title">Welcome to React</h1>
                 </header>
-                <p className="App-intro">
-                    To get started, edit <code>src/App.js</code> and save to reload.
-                </p>
+
+                <TransportControls />
+
                 <Input playlist={this.add_to_playlist.bind(this)}/>
                 <ul>{this.state.playlist.map(function(list_item) {
                     return <li>{list_item}</li>;
@@ -46,11 +46,9 @@ class Input extends Component {
 
     handleChange(event) {
         this.setState({value: event.target.value});
-        //console.log(this.props.playlist)
     }
 
     handleSubmit(event) {
-        //this.props.playlist.push(this.state.value);
         this.props.playlist(this.state.value);
         this.setState({
             value: '',
@@ -62,11 +60,48 @@ class Input extends Component {
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
-                    Name:
+                    Add To Playlist:
                     <input type="text" value={this.state.value} onChange={this.handleChange} />
                 </label>
                 <input type="submit" value="Submit" />
             </form>
+        );
+    }
+}
+
+class TransportControls extends Component {
+    render() {
+        return(
+            <div>
+                <Previous />
+                <PlayPause />
+                <Next />
+            </div>
+        );
+    }
+}
+
+class PlayPause extends Component {
+    render() {
+        return (
+            <button type="button">PlayPause</button>
+        );
+    }
+}
+
+class Previous extends Component {
+    render() {
+        return(
+            <button type="button">Previous</button>
+        );
+    }
+
+}
+
+class Next extends Component {
+    render() {
+        return (
+                <button type="button">Next</button>
         );
     }
 }
