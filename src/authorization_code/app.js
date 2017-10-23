@@ -12,9 +12,9 @@ var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = '68d49ecf355c49078720c714d2655b87'; // Your client id
-var client_secret = 'b21e125a2fec404d9b2f34299806f457'; // Your secret
-var redirect_uri = 'http://psmusgrave.com'; // Your redirect uri
+var client_id = ''; // Your client id
+var client_secret = ''; // Your secret
+var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -39,13 +39,12 @@ app.use(express.static(__dirname + '/public'))
    .use(cookieParser());
 
 app.get('/login', function(req, res) {
+    var state = generateRandomString(16);
+    res.cookie(stateKey, state);
 
-  var state = generateRandomString(16);
-  res.cookie(stateKey, state);
-
-  // your application requests authorization
-  var scope = 'user-read-private user-read-email';
-  res.redirect('https://accounts.spotify.com/authorize?' +
+    // your application requests authorization
+    var scope = 'user-read-private user-read-email streaming user-read-playback-state user-modify-playback-state user-read-currently-playing user-read-recently-played';
+    res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
       client_id: client_id,
@@ -91,14 +90,24 @@ app.get('/callback', function(req, res) {
             refresh_token = body.refresh_token;
 
         var options = {
-          url: 'https://api.spotify.com/v1/me',
+          url: 'https://api.spotify.com/v1/me/player/devices',
           headers: { 'Authorization': 'Bearer ' + access_token },
           json: true
         };
 
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
-          console.log(body);
+            console.log(body);
+            var options = {
+              url: 'https://api.spotify.com/v1/me/player/pause',
+              headers: { 'Authorization': 'Bearer ' + access_token },
+              json: true
+            };
+
+            // use the access token to access the Spotify Web API
+            request.put(options, function(error, response, body) {
+              console.log(body);
+            });
         });
 
         // we can also pass the token to the browser to make requests from there
@@ -140,6 +149,7 @@ app.get('/refresh_token', function(req, res) {
     }
   });
 });
+
 
 console.log('Listening on 8888');
 app.listen(8888);
