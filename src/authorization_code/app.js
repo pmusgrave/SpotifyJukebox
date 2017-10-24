@@ -1,3 +1,6 @@
+// source: Spotify API code examples
+// https://developer.spotify.com/web-api/code-examples/
+
 /**
  * This is an example of a basic node.js script that performs
  * the Authorization Code oAuth2 flow to authenticate against
@@ -12,9 +15,7 @@ var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = ''; // Your client id
-var client_secret = ''; // Your secret
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+//removed client id and secret from github
 
 /**
  * Generates a random string containing numbers and letters
@@ -98,16 +99,21 @@ app.get('/callback', function(req, res) {
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
             console.log(body);
+            let num_devices = body.devices.length;
+            let device_id = null;
+            for (let i = 0; i < num_devices; i++) {
+                if (body.devices[i].is_active === true) {
+                    device_id = body.devices[i].id;
+                }
+            }
             var options = {
               url: 'https://api.spotify.com/v1/me/player/pause',
               headers: { 'Authorization': 'Bearer ' + access_token },
-              json: true
+              device_id: device_id
             };
 
             // use the access token to access the Spotify Web API
-            request.put(options, function(error, response, body) {
-              console.log(body);
-            });
+            request.put(options, function(error, response, body) {});
         });
 
         // we can also pass the token to the browser to make requests from there
