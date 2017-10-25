@@ -10,6 +10,9 @@ const query_string = require('query-string');
 
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 var stateKey = 'spotify_auth_state';
+var parsed_hash = query_string.parse(window.location.hash);
+var access_token = parsed_hash['access_token'];
+var refresh_token = parsed_hash['refresh_token'];
 
 function get_parameter_by_name(name) {
   // this function copied from stackoverflow here:
@@ -95,7 +98,7 @@ class TransportControls extends Component {
     return(
       <div>
         <PlayPause />
-        <Next />
+        <Next track_id="spotify:track:3pXAa69soxZ98bQ1gr18HO"/>
       </div>
     );
   }
@@ -108,16 +111,7 @@ class PlayPause extends Component {
   }
 
   pause_playback() {
-    console.log('hi');
-    // your application requests refresh and access tokens
-    // after checking the state parameter
-
-    let parsed_hash = query_string.parse(window.location.hash);
-
-    var access_token = parsed_hash['access_token'];
-    var refresh_token = parsed_hash['refresh_token'];
-
-    var options = {
+    let options = {
       url: 'https://api.spotify.com/v1/me/player/devices',
       headers: { 'Authorization': 'Bearer ' + access_token },
       json: true
@@ -125,6 +119,7 @@ class PlayPause extends Component {
 
     // use the access token to access the Spotify Web API
     request.get(options, function(error, response, body) {
+        // get active device before changing playback
         console.log(body);
         let num_devices = body.devices.length;
         let device_id = null;
@@ -133,7 +128,7 @@ class PlayPause extends Component {
                 device_id = body.devices[i].id;
             }
         }
-        var options = {
+        let options = {
           url: 'https://api.spotify.com/v1/me/player/pause',
           headers: { 'Authorization': 'Bearer ' + access_token },
           device_id: device_id
@@ -153,9 +148,47 @@ class PlayPause extends Component {
 }
 
 class Next extends Component {
+  constructor(props) {
+    super(props);
+    console.log(props);
+  }
+
+  play_next_track(track_id) {
+    console.log(JSON.stringify({"uris": [track_id]}));
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player/devices',
+      headers: { 'Authorization': 'Bearer ' + access_token },
+      json: true
+    };
+
+    request.get(options, function(error, response, body) {
+        // get active device before changing playback
+        console.log(body);
+        let num_devices = body.devices.length;
+        let device_id = null;
+        for (let i = 0; i < num_devices; i++) {
+            if (body.devices[i].is_active === true) {
+                device_id = body.devices[i].id;
+            }
+        }
+        let options = {
+          url: 'https://api.spotify.com/v1/me/player/play',
+          headers: { 'Authorization': 'Bearer ' + access_token },
+          device_id: device_id,
+          json: true,
+          body: JSON.stringify({"uris": [track_id]})
+        };
+        request.put(options, function(error, response, body) {
+          console.log(response);
+          console.log('Next track... ' + track_id);
+        });
+    });
+
+  }
+
   render() {
     return (
-      <button type="button">Next</button>
+      <button type="button" onClick={this.play_next_track.bind(this, this.props.track_id)}>Next</button>
     );
   }
 }
