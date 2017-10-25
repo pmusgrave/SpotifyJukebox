@@ -94,7 +94,6 @@ class TransportControls extends Component {
   render() {
     return(
       <div>
-        <Previous />
         <PlayPause />
         <Next />
       </div>
@@ -149,14 +148,6 @@ class PlayPause extends Component {
   render() {
     return (
       <button type="button" onClick={this.pause_playback}>PlayPause</button>
-    );
-  }
-}
-
-class Previous extends Component {
-  render() {
-    return(
-      <button type="button">Previous</button>
     );
   }
 }
