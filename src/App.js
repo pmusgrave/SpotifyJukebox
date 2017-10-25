@@ -46,7 +46,7 @@ class App extends Component {
                 <h1 className="App-title">Spotify Jukebox</h1>
               </header>
               <Login />
-              <TransportControls />
+              <TransportControls playlist={this.state.playlist}/>
 
               <Input playlist={this.add_to_playlist.bind(this)}/>
               <ul>{this.state.playlist.map(function(list_item) {
@@ -94,11 +94,16 @@ class Input extends Component {
 }
 
 class TransportControls extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
+    console.log(this.props);
     return(
       <div>
         <PlayPause />
-        <Next track_id="spotify:track:3pXAa69soxZ98bQ1gr18HO"/>
+        <Next track_id={this.props.playlist[0]}/>
       </div>
     );
   }
@@ -120,7 +125,6 @@ class PlayPause extends Component {
     // use the access token to access the Spotify Web API
     request.get(options, function(error, response, body) {
         // get active device before changing playback
-        console.log(body);
         let num_devices = body.devices.length;
         let device_id = null;
         for (let i = 0; i < num_devices; i++) {
@@ -150,7 +154,6 @@ class PlayPause extends Component {
 class Next extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
   }
 
   play_next_track(track_id) {
@@ -163,7 +166,7 @@ class Next extends Component {
 
     request.get(options, function(error, response, body) {
         // get active device before changing playback
-        console.log(body);
+        console.log(track_id);
         let num_devices = body.devices.length;
         let device_id = null;
         for (let i = 0; i < num_devices; i++) {
