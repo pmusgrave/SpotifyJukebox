@@ -1,6 +1,27 @@
+// this is a really ugly early version and needs to be split up into modules
+
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Link } from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
+
+const request = require('browser-request');
+const query_string = require('query-string');
+
+var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+var stateKey = 'spotify_auth_state';
+
+function get_parameter_by_name(name) {
+  // this function copied from stackoverflow here:
+  // https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+  var url = window.location.href;
+  //name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&#]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 
 class App extends Component {
     constructor(props) {
@@ -17,17 +38,17 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h1 className="App-title">Welcome to React</h1>
-                </header>
+              <header className="App-header">
+                <img src={logo} className="App-logo" alt="logo" />
+                <h1 className="App-title">Spotify Jukebox</h1>
+              </header>
+              <Login />
+              <TransportControls />
 
-                <TransportControls />
-
-                <Input playlist={this.add_to_playlist.bind(this)}/>
-                <ul>{this.state.playlist.map(function(list_item) {
-                    return <li>{list_item}</li>;
-                })}</ul>
+              <Input playlist={this.add_to_playlist.bind(this)}/>
+              <ul>{this.state.playlist.map(function(list_item) {
+                return <li>{list_item}</li>;
+              })}</ul>
             </div>
         );
     }
@@ -70,40 +91,116 @@ class Input extends Component {
 }
 
 class TransportControls extends Component {
-    render() {
-        return(
-            <div>
-                <Previous />
-                <PlayPause />
-                <Next />
-            </div>
-        );
-    }
+  render() {
+    return(
+      <div>
+        <Previous />
+        <PlayPause />
+        <Next />
+      </div>
+    );
+  }
 }
 
 class PlayPause extends Component {
-    render() {
-        return (
-            <button type="button">PlayPause</button>
-        );
-    }
+  constructor() {
+    super();
+    this.pause_playback = this.pause_playback.bind(this);
+  }
+
+  pause_playback() {
+    console.log('hi');
+    // your application requests refresh and access tokens
+    // after checking the state parameter
+
+    let parsed_hash = query_string.parse(window.location.hash);
+
+    var access_token = parsed_hash['access_token'];
+    var refresh_token = parsed_hash['refresh_token'];
+
+    var options = {
+      url: 'https://api.spotify.com/v1/me/player/devices',
+      headers: { 'Authorization': 'Bearer ' + access_token },
+      json: true
+    };
+
+    // use the access token to access the Spotify Web API
+    request.get(options, function(error, response, body) {
+        console.log(body);
+        let num_devices = body.devices.length;
+        let device_id = null;
+        for (let i = 0; i < num_devices; i++) {
+            if (body.devices[i].is_active === true) {
+                device_id = body.devices[i].id;
+            }
+        }
+        var options = {
+          url: 'https://api.spotify.com/v1/me/player/pause',
+          headers: { 'Authorization': 'Bearer ' + access_token },
+          device_id: device_id
+        };
+        request.put(options, function(error, response, body) {
+          console.log('Pausing...');
+        });
+    });
+
+  }
+
+  render() {
+    return (
+      <button type="button" onClick={this.pause_playback}>PlayPause</button>
+    );
+  }
 }
 
 class Previous extends Component {
-    render() {
-        return(
-            <button type="button">Previous</button>
-        );
-    }
-
+  render() {
+    return(
+      <button type="button">Previous</button>
+    );
+  }
 }
 
 class Next extends Component {
-    render() {
-        return (
-                <button type="button">Next</button>
-        );
-    }
+  render() {
+    return (
+      <button type="button">Next</button>
+    );
+  }
 }
+
+class Login extends Component {
+  render() {
+    return (
+      <a href="/login">Login to Spotify</a>
+    );
+  }
+}
+
+
+// function refresh_token() {
+//
+//   // requesting access token from refresh token
+//   var refresh_token = req.query.refresh_token;
+//   var authOptions = {
+//     url: 'https://accounts.spotify.com/api/token',
+//     headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+//     form: {
+//       grant_type: 'refresh_token',
+//       refresh_token: refresh_token
+//     },
+//     json: true
+//   };
+//
+//   request.post(authOptions, function(error, response, body) {
+//     if (!error && response.statusCode === 200) {
+//       var access_token = body.access_token;
+//       res.send({
+//         'access_token': access_token
+//       });
+//     }
+//   });
+// }
+
 
 export default App;
