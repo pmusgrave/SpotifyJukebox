@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import Input from './Input.js';
 const request = require('browser-request');
 const querystring = require('querystring');
 
@@ -7,15 +8,21 @@ class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      artists : {},
-      albums : {},
-      playlists : {},
-      tracks : {}
+      query: '',
+      results: {
+        artists : {},
+        albums : {},
+        playlists : {},
+        tracks : {}
+      }
     };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   search_for_track(query) {
-    console.log(JSON.stringify({"uris": [track_id]}));
+    // console.log(JSON.stringify({"uris": [track_id]}));
     let options = {
       url: 'https://api.spotify.com/v1/me/player/devices',
       headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
@@ -24,24 +31,21 @@ class Search extends Component {
 
     request.get(options, (error, response, body) => {
         // get active device before changing playback
-        console.log(track_id);
-        let num_devices = body.devices.length;
-        let device_id = null;
-        for (let i = 0; i < num_devices; i++) {
-            if (body.devices[i].is_active === true) {
-                device_id = body.devices[i].id;
-            }
-        }
+        // let num_devices = body.devices.length;
+        // let device_id = null;
+        // for (let i = 0; i < num_devices; i++) {
+        //     if (body.devices[i].is_active === true) {
+        //         device_id = body.devices[i].id;
+        //     }
+        // }
         let options = {
-          url: 'https://api.spotify.com/v1/search',
+          url: 'https://api.spotify.com/v1/search' + '/?' + querystring.stringify({"q" : query}) + '&type=album,artist,playlist,track',
           headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
-          device_id: device_id,
           json: true,
-          body: querystring.stringify("q=" + query),
-          type: album, artist, playlist, track
         };
-        request.get(options, function(error, response, body) {
-          console.log('Searching... ' + track_id);
+        request.get(options, (error, response, body) => {
+          console.log('Searching for ' + query + "...");
+          console.log(body)
           this.setState({
             artists: body.artists,
             albums : body.albums,
@@ -53,11 +57,26 @@ class Search extends Component {
 
   }
 
+  handleChange(event) {
+      this.setState({query: event.target.value});
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.search_for_track(this.state.query);
+    this.setState({query: ''});
+  }
+
   render() {
     return (
       <div>
-        <form></form>
-        <div></div>
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            Search:
+            <input type="text" value={this.state.value} onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
       </div>
     );
   }

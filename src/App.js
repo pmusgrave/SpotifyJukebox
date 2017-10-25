@@ -43,7 +43,7 @@ class App extends Component {
         this.setState({playlist: this.state.playlist.concat([value])});
     }
 
-    playlist_next_track => {
+    playlist_next_track = () => {
       this.setState({playlist: this.state.playlist.slice(1)});
     }
 
@@ -56,7 +56,7 @@ class App extends Component {
               </header>
               <Login />
               <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track} auth_keys={auth_keys}/>
-
+              <Search auth_keys={auth_keys} />
               <Input playlist={this.add_to_playlist.bind(this)}/>
               <ul>{this.state.playlist.map(function(list_item) {
                 return <li>{list_item}</li>;
