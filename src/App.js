@@ -1,5 +1,3 @@
-// this is a really ugly early version and needs to be split up into modules
-
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import logo from './logo.svg';
@@ -56,7 +54,7 @@ class App extends Component {
               </header>
               <Login />
               <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track} auth_keys={auth_keys}/>
-              <Search auth_keys={auth_keys} />
+              <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} auth_keys={auth_keys} />
               <Input playlist={this.add_to_playlist.bind(this)}/>
               <ul>{this.state.playlist.map(function(list_item) {
                 return <li>{list_item}</li>;

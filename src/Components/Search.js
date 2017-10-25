@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Input from './Input.js';
+import SearchResult from './SearchResult.js';
 const request = require('browser-request');
 const querystring = require('querystring');
 
@@ -22,7 +23,6 @@ class Search extends Component {
   }
 
   search_for_track(query) {
-    // console.log(JSON.stringify({"uris": [track_id]}));
     let options = {
       url: 'https://api.spotify.com/v1/me/player/devices',
       headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
@@ -30,14 +30,6 @@ class Search extends Component {
     };
 
     request.get(options, (error, response, body) => {
-        // get active device before changing playback
-        // let num_devices = body.devices.length;
-        // let device_id = null;
-        // for (let i = 0; i < num_devices; i++) {
-        //     if (body.devices[i].is_active === true) {
-        //         device_id = body.devices[i].id;
-        //     }
-        // }
         let options = {
           url: 'https://api.spotify.com/v1/search' + '/?' + querystring.stringify({"q" : query}) + '&type=album,artist,playlist,track',
           headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
@@ -78,41 +70,30 @@ class Search extends Component {
           <input type="submit" value="Submit" />
         </form>
 
-        <div>
-          <h2>Artists</h2>
-          <ul>
-            {this.state.results.artists.map(function(list_item) {
-              return <li>{list_item["uri"]}</li>;
-            })}
-          </ul>
-        </div>  
-
-        <div>
-          <h2>Albums</h2>
-          <ul>
-            {this.state.results.albums.map(function(list_item) {
-              return <li>{list_item["uri"]}</li>;
-            })}
-          </ul>
-        </div>  
-
-        <div>
-          <h2>Tracks</h2>
-          <ul>
-            {this.state.results.tracks.map(function(list_item) {
-              return <li>{list_item["uri"]}</li>;
-            })}
-          </ul>
-        </div>  
-
-        <div>
-          <h2>Playlists</h2>
-          <ul>
-            {this.state.results.playlists.map(function(list_item) {
-              return <li>{list_item["uri"]}</li>;
-            })}
-          </ul>
-        </div>  
+        <SearchResult 
+          playlist={this.props.playlist} 
+          add_to_playlist={this.props.add_to_playlist} 
+          title="Artists" 
+          results={this.props.results.artists}
+        />
+        <SearchResult 
+          playlist={this.props.playlist} 
+          add_to_playlist={this.props.add_to_playlist} 
+          title="Albums" 
+          results={this.props.results.albums}
+        />
+        <SearchResult 
+          playlist={this.props.playlist} 
+          add_to_playlist={this.props.add_to_playlist} 
+          title="Tracks" 
+          results={this.props.results.tracks}
+        />
+        <SearchResult 
+          playlist={this.props.playlist} 
+          add_to_playlist={this.props.add_to_playlist} 
+          title="Playlists" 
+          results={this.props.results.playlists}
+        />        
       </div>
     );
   }
