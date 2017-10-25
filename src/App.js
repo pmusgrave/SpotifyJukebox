@@ -6,6 +6,7 @@ import logo from './logo.svg';
 import './App.css';
 import Input from './Components/Input.js';
 import Login from './Components/Login.js';
+import Search from './Components/Search.js';
 import TransportControls from './Components/TransportControls.js';
 
 const query_string = require('query-string');
