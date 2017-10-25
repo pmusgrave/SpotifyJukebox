@@ -10,6 +10,7 @@ class Next extends Component {
   }
 
   play_next_track(track_id) {
+    this.props.playlist_next_track(); // removes next item from playlist
     console.log(this.props);
     console.log(JSON.stringify({"uris": [track_id]}));
     let options = {

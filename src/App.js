@@ -42,6 +42,10 @@ class App extends Component {
         this.setState({playlist: this.state.playlist.concat([value])});
     }
 
+    playlist_next_track => {
+      this.setState({playlist: this.state.playlist.slice(1)});
+    }
+
     render() {
         return (
             <div className="App">
@@ -50,7 +54,7 @@ class App extends Component {
                 <h1 className="App-title">Spotify Jukebox</h1>
               </header>
               <Login />
-              <TransportControls playlist={this.state.playlist} auth_keys={auth_keys}/>
+              <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track} auth_keys={auth_keys}/>
 
               <Input playlist={this.add_to_playlist.bind(this)}/>
               <ul>{this.state.playlist.map(function(list_item) {
