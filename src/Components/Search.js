@@ -77,6 +77,42 @@ class Search extends Component {
           </label>
           <input type="submit" value="Submit" />
         </form>
+
+        <div>
+          <h2>Artists</h2>
+          <ul>
+            {this.state.results.artists.map(function(list_item) {
+              return <li>{list_item["uri"]}</li>;
+            })}
+          </ul>
+        </div>  
+
+        <div>
+          <h2>Albums</h2>
+          <ul>
+            {this.state.results.albums.map(function(list_item) {
+              return <li>{list_item["uri"]}</li>;
+            })}
+          </ul>
+        </div>  
+
+        <div>
+          <h2>Tracks</h2>
+          <ul>
+            {this.state.results.tracks.map(function(list_item) {
+              return <li>{list_item["uri"]}</li>;
+            })}
+          </ul>
+        </div>  
+
+        <div>
+          <h2>Playlists</h2>
+          <ul>
+            {this.state.results.playlists.map(function(list_item) {
+              return <li>{list_item["uri"]}</li>;
+            })}
+          </ul>
+        </div>  
       </div>
     );
   }
