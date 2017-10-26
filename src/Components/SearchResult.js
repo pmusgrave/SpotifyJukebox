@@ -17,20 +17,18 @@ class SearchResult extends Component {
   }
 
   render() {
-    if (this.props.results.hasOwnProperty('items')) {
+    if (this.props.results.hasOwnProperty('items') && this.props.results != undefined) {
       return(
         <div>
           <h2>{this.props.title}</h2>
-
-          <ul>
-            {this.props.results.items.map(function(list_item) {
-
-              return <li>{list_item["uri"]}</li>
-
+          <div>
+            {this.props.results.items.map((list_item) => {
+              return <div>
+                <label>{list_item["uri"]}</label>
+                <button onClick={this.queue_item.bind(this,list_item["uri"])}>Add</button>
+              </div>
             })}
-          </ul>
-
-
+          </div>
         </div>
       )
     }
