@@ -37,13 +37,16 @@ class Search extends Component {
         };
         request.get(options, (error, response, body) => {
           console.log('Searching for ' + query + "...");
-          console.log(body)
+          //console.log(body)
           this.setState({
-            artists: body.artists,
-            albums : body.albums,
-            playlists : body.playlists,
-            tracks : body.tracks
+            results: {
+              artists: body.artists,
+              albums : body.albums,
+              playlists : body.playlists,
+              tracks : body.tracks
+            }
           });
+          //console.log(this.state.artists.items)
         });
     });
 
@@ -70,30 +73,33 @@ class Search extends Component {
           <input type="submit" value="Submit" />
         </form>
 
-        <SearchResult 
-          playlist={this.props.playlist} 
-          add_to_playlist={this.props.add_to_playlist} 
-          title="Artists" 
-          results={this.props.results.artists}
+
+        <SearchResult
+          playlist={this.props.playlist}
+          add_to_playlist={this.props.add_to_playlist}
+          title="Artists"
+          results={this.state.results.artists}
         />
-        <SearchResult 
-          playlist={this.props.playlist} 
-          add_to_playlist={this.props.add_to_playlist} 
-          title="Albums" 
-          results={this.props.results.albums}
+        <SearchResult
+          playlist={this.props.playlist}
+          add_to_playlist={this.props.add_to_playlist}
+          title="Albums"
+          results={this.state.results.albums}
         />
-        <SearchResult 
-          playlist={this.props.playlist} 
-          add_to_playlist={this.props.add_to_playlist} 
-          title="Tracks" 
-          results={this.props.results.tracks}
+        <SearchResult
+          playlist={this.props.playlist}
+          add_to_playlist={this.props.add_to_playlist}
+          title="Tracks"
+          results={this.state.results.tracks}
         />
-        <SearchResult 
-          playlist={this.props.playlist} 
-          add_to_playlist={this.props.add_to_playlist} 
-          title="Playlists" 
-          results={this.props.results.playlists}
-        />        
+        <SearchResult
+          playlist={this.props.playlist}
+          add_to_playlist={this.props.add_to_playlist}
+          title="Playlists"
+          results={this.state.results.playlists}
+        />
+
+
       </div>
     );
   }
