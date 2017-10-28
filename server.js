@@ -13,7 +13,7 @@
 var express = require('express');
 var app = express(); // Express web server framework
 var http = require('http').Server(app);
-var socket = require('socket.io')(http);
+var io = require('socket.io')(http);
 var request = require('request'); // "Request" library
 //   ^^^ watch out not to confuse request object with req callback arg
 // naming could be improved for clarity
@@ -51,7 +51,7 @@ function nocache(req, res, next) {
   next();
 }
 
-app.use('/', express.static(__dirname + '/build'));
+app.use(express.static(__dirname + '/build'));
 app.use(cookieParser());
 
 app.get('/', nocache, function(req, res) {
@@ -163,7 +163,7 @@ app.get('/refresh_token', nocache, function(req, res) {
 /******************************************************
                    SOCKET.IO
 ******************************************************/
-socket.on('connection', function(socket){
+io.on('connection', function(socket){
   // connections should only happen after user authenticates with Spotify
   // OR, I might have to create a socket client object initially,
   // and emit a signal when auth is successful and do
@@ -186,6 +186,11 @@ socket.on('connection', function(socket){
       // callback function called if user is allowed to join room
       socket.join(room);
     });
+  });
+
+  socket.on('playlist_add', (uri) => {
+    console.log('playlist_add ' + uri);
+    io.sockets.emit('playlist_add', uri);
   });
 });
 

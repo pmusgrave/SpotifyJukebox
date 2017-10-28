@@ -7,9 +7,6 @@ import Login from './Components/Login.js';
 import Search from './Components/Search.js';
 import TransportControls from './Components/TransportControls.js';
 
-//import SocketIOClient from 'socket.io-client';
-var socket = require('socket.io-client')('http://localhost:8888');
-
 var query_string = require('query-string');
 
 var parsed_hash = query_string.parse(window.location.hash);
@@ -20,19 +17,6 @@ var auth_keys = {
   refresh_token: parsed_hash['refresh_token']
 }
 
-
-// function get_parameter_by_name(name) {
-//   // this function copied from stackoverflow here:
-//   // https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
-//   var url = window.location.href;
-//   //name = name.replace(/[\[\]]/g, "\\$&");
-//   var regex = new RegExp("[?&#]" + name + "(=([^&#]*)|&|#|$)"),
-//       results = regex.exec(url);
-//   if (!results) return null;
-//   if (!results[2]) return '';
-//   return decodeURIComponent(results[2].replace(/\+/g, " "));
-// }
-
 class App extends Component {
   constructor(props) {
       super(props);
@@ -40,7 +24,11 @@ class App extends Component {
         authenticated: true,
         playlist: [],
       };
-      //this.socket = SocketIOClient('http://localhost:8888');
+      this.socket = require('socket.io-client')('http://localhost:8888');
+      this.socket.on('playlist_add', (uri) => {
+        console.log('playlist_add ' + uri);
+        this.add_to_playlist(uri);
+      });
       //this.is_authenticated();
   }
 
@@ -72,8 +60,14 @@ class App extends Component {
     // });
   // }
 
+  add_to_playlist_broadcast = (value) => {
+    this.socket.emit('playlist_add', value);
+  }
+
   add_to_playlist = (value) => {
-      this.setState({playlist: this.state.playlist.concat([value])});
+    console.log('value is ');
+    console.log(value);
+    this.setState({playlist: this.state.playlist.concat([value])});
   }
 
   playlist_next_track = () => {
@@ -82,16 +76,6 @@ class App extends Component {
 
   render() {
     // if(true) {
-      // socket.on('playlist_add', (uri) => {
-      //   console.log('adding' + uri);
-      //   this.add_to_playlist(uri);
-      // }
-
-      // // when you want to add a song, broadcast uri to add
-      // socket.broadcast.emit('playlist_add', (uri) => {
-      //   console.log('adding' + uri);
-      // }
-
       return (
           <div className="App">
             <header className="App-header">
@@ -100,8 +84,8 @@ class App extends Component {
             </header>
             <Login/>
             <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track} auth_keys={auth_keys}/>
-            <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} auth_keys={auth_keys} />
-            <Input playlist={this.add_to_playlist.bind(this)}/>
+            <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} add_broadcast={this.add_to_playlist_broadcast} auth_keys={auth_keys} />
+            <Input playlist={this.add_to_playlist_broadcast.bind(this)}/>
             <ul>{this.state.playlist.map(function(list_item) {
               return <li>{list_item}</li>;
             })}</ul>

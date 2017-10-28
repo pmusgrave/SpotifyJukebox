@@ -12,7 +12,8 @@ class SearchResult extends Component {
   queue_item(item) {
     //event.preventDefault();
     console.log('queueueueueuing');
-    this.props.add_to_playlist(item);
+    //this.props.add_to_playlist(item);
+    this.props.add_broadcast(item);
     this.setState({current_selection: ''});
   }
 
