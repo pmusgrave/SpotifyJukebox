@@ -1,4 +1,4 @@
-// source: Spotify API code examples
+// This started out as one of the Spotify API code examples
 // https://developer.spotify.com/web-api/code-examples/
 
 /**
@@ -10,32 +10,18 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
-var express = require('express'); // Express web server framework
+var express = require('express');
+var app = express(); // Express web server framework
+var http = require('http').Server(app);
+var socket = require('socket.io')(http);
 var request = require('request'); // "Request" library
+//   ^^^ watch out not to confuse request object with req callback arg
+// naming could be improved for clarity
+
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-///////////////////////////////////////////////////////////////////////////////
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-///////////////////////////////////////////////////////////////////////////////
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// REMOVE BEFORE PUSHING TO GITHUB
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-///////////////////////////////////////////////////////////////////////////////
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-///////////////////////////////////////////////////////////////////////////////
-var client_id = '68d49ecf355c49078720c714d2655b87'; // Your client id
-var client_secret = '60f082a196e143ebb10acc060f9558d3'; // Your secret
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
-///////////////////////////////////////////////////////////////////////////////
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-///////////////////////////////////////////////////////////////////////////////
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// REMOVE BEFORE PUSHING TO GITHUB
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-///////////////////////////////////////////////////////////////////////////////
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-///////////////////////////////////////////////////////////////////////////////
+// removed client_id and client_secret from github
 
 /**
  * Generates a random string containing numbers and letters
@@ -53,6 +39,11 @@ var generateRandomString = function(length) {
 };
 
 
+var stateKey = 'spotify_auth_state';
+
+/******************************************************
+                    EXPRESS
+******************************************************/
 function nocache(req, res, next) {
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.header('Expires', '-1');
@@ -60,15 +51,14 @@ function nocache(req, res, next) {
   next();
 }
 
-var stateKey = 'spotify_auth_state';
-
-var app = express();
-app.use(express.static(__dirname + '/build'));
+app.use('/', express.static(__dirname + '/build'));
 app.use(cookieParser());
 
 app.get('/', nocache, function(req, res) {
   console.log('yo root');
-  res.sendFile(__dirname + '/reactindex.html');
+  // res.sendFile(__dirname + '/reactindex.html');
+  // res.sendFile(__dirname + '/index.html');
+  // res.sendFile(__dirname + '/test.html');
 });
 
 app.get('/login', nocache, function(req, res) {
@@ -118,7 +108,7 @@ app.get('/callback', nocache, function(req, res) {
     };
 
     request.post(authOptions, function(error, response, body) {
-      if (!error && response.statusCode === 200) {
+      if (!error && res.statusCode === 200) {
 
         var access_token = body.access_token,
             refresh_token = body.refresh_token;
@@ -128,10 +118,9 @@ app.get('/callback', nocache, function(req, res) {
           headers: { 'Authorization': 'Bearer ' + access_token },
           json: true
         };
-        request.get(options, function(error, response, body) {});
+        request.get(options, function(error, res, body) {});
 
-
-          // we can also pass the token to the browser to make requests from there
+        // we can also pass the token to the browser to make requests from there
         res.redirect('/#' +
           querystring.stringify({
             access_token: access_token,
@@ -161,8 +150,8 @@ app.get('/refresh_token', nocache, function(req, res) {
     json: true
   };
 
-  request.post(authOptions, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
+  request.post(authOptions, function(error, res, body) {
+    if (!error && res.statusCode === 200) {
       var access_token = body.access_token;
       res.send({
         'access_token': access_token
@@ -171,6 +160,45 @@ app.get('/refresh_token', nocache, function(req, res) {
   });
 });
 
+/******************************************************
+                   SOCKET.IO
+******************************************************/
+socket.on('connection', function(socket){
+  // connections should only happen after user authenticates with Spotify
+  // OR, I might have to create a socket client object initially,
+  // and emit a signal when auth is successful and do
+  // everything in the auth_success callback
+  console.log('a user connected');
 
-console.log('Listening on 8888');
-app.listen(8888);
+  // if client socket connection happens on page load, then,
+  // use this event after auth
+  socket.on('authenticated', () => {
+    socket.on('try_to_join_room', (user, room) => {
+      room_auth(function(){
+        // callback function called if user is allowed to join room
+        socket.join(room);
+      });
+    });
+  });
+
+  socket.on('try_to_join_room', (user, room) => {
+    room_auth(function(){
+      // callback function called if user is allowed to join room
+      socket.join(room);
+    });
+  });
+});
+
+function room_auth(join) {
+  if(false){
+    join();
+  }
+}
+
+
+/******************************************************
+                  HTTP SERVER
+******************************************************/
+http.listen(8888, function(){
+  console.log('listening on port 8888');
+});

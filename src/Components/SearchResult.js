@@ -24,7 +24,7 @@ class SearchResult extends Component {
           <div>
             {this.props.results.items.map((list_item) => {
               return <div>
-                <label>{list_item["uri"]}</label>
+                <label>{list_item["name"]}</label>
                 <button onClick={this.queue_item.bind(this,list_item["uri"])}>Add</button>
               </div>
             })}
