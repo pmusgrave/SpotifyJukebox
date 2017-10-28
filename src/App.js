@@ -84,7 +84,7 @@ class App extends Component {
             </header>
             <Login/>
             <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track} auth_keys={auth_keys}/>
-            <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} add_broadcast={this.add_to_playlist_broadcast} auth_keys={auth_keys} />
+            <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} socket={this.socket} auth_keys={auth_keys} />
             <Input playlist={this.add_to_playlist_broadcast.bind(this)}/>
             <ul>{this.state.playlist.map(function(list_item) {
               return <li>{list_item}</li>;

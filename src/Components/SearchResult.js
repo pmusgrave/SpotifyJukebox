@@ -13,7 +13,8 @@ class SearchResult extends Component {
     //event.preventDefault();
     console.log('queueueueueuing');
     //this.props.add_to_playlist(item);
-    this.props.add_broadcast(item);
+    this.props.socket.emit('playlist_add', item);
+    //this.props.add_broadcast(item);
     this.setState({current_selection: ''});
   }
 
