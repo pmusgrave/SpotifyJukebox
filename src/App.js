@@ -60,10 +60,6 @@ class App extends Component {
     // });
   // }
 
-  add_to_playlist_broadcast = (value) => {
-    this.socket.emit('playlist_add', value);
-  }
-
   add_to_playlist = (value) => {
     console.log('value is ');
     console.log(value);
@@ -71,6 +67,7 @@ class App extends Component {
   }
 
   playlist_next_track = () => {
+    console.log('next track');
     this.setState({playlist: this.state.playlist.slice(1)});
   }
 
@@ -83,9 +80,8 @@ class App extends Component {
               <h1 className="App-title">Spotify Jukebox</h1>
             </header>
             <Login/>
-            <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track} auth_keys={auth_keys}/>
-            <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} socket={this.socket} auth_keys={auth_keys} />
-            <Input playlist={this.add_to_playlist_broadcast.bind(this)}/>
+            <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track.bind(this)} socket={this.socket} auth_keys={auth_keys}/>
+            <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} socket={this.socket} auth_keys={auth_keys}/>
             <ul>{this.state.playlist.map(function(list_item) {
               return <li>{list_item}</li>;
             })}</ul>

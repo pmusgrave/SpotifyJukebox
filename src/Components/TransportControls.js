@@ -13,7 +13,12 @@ class TransportControls extends Component {
     return(
       <div>
         <PlayPause auth_keys={this.props.auth_keys} />
-        <Next playlist_next_track={this.props.playlist_next_track} auth_keys={this.props.auth_keys} track_id={this.props.playlist[0]}/>
+        <Next
+          playlist_next_track={this.props.playlist_next_track}
+          auth_keys={this.props.auth_keys}
+          track_id={this.props.playlist[0]}
+          socket={this.props.socket}
+        />
       </div>
     );
   }

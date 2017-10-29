@@ -77,33 +77,9 @@ class Search extends Component {
         <SearchResult
           playlist={this.props.playlist}
           add_to_playlist={this.props.add_to_playlist}
-          add_broadcast={this.props.add_broadcast}
-          socket={this.props.socket}
-          title="Artists"
-          results={this.state.results.artists}
-        />
-        <SearchResult
-          playlist={this.props.playlist}
-          add_to_playlist={this.props.add_to_playlist}
-          add_broadcast={this.props.add_broadcast}
-          socket={this.props.socket}
-          title="Albums"
-          results={this.state.results.albums}
-        />
-        <SearchResult
-          playlist={this.props.playlist}
-          add_to_playlist={this.props.add_to_playlist}
-          add_broadcast={this.props.add_broadcast}
-          socket={this.props.socket}
           title="Tracks"
           results={this.state.results.tracks}
-        />
-        <SearchResult
-          playlist={this.props.playlist}
-          add_to_playlist={this.props.add_to_playlist}
-          add_broadcast={this.props.add_broadcast}
-          title="Playlists"
-          results={this.state.results.playlists}
+          socket={this.props.socket}
         />
 
 

@@ -192,6 +192,11 @@ io.on('connection', function(socket){
     console.log('playlist_add ' + uri);
     io.sockets.emit('playlist_add', uri);
   });
+
+  socket.on('next_track', (track_id) => {
+    console.log('next_track ' + track_id);
+    io.sockets.emit('next_track', track_id);
+  })
 });
 
 function room_auth(join) {
