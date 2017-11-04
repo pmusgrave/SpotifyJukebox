@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import logo from './logo.svg';
@@ -23,6 +24,8 @@ class App extends Component {
       this.state = {
         authenticated: true,
         playlist: [],
+        playback_state: 'paused',
+        toggle_playback_state: this.toggle_playback_state
       };
       this.socket = require('socket.io-client')('http://localhost:8888');
       this.socket.on('playlist_add', (uri) => {
@@ -30,6 +33,15 @@ class App extends Component {
         this.add_to_playlist(uri);
       });
       //this.is_authenticated();
+  }
+
+  toggle_playback_state() {
+    if (this.state.playback_state === 'paused') {
+      this.setState({playback_state: 'playing'})
+    }
+    else if(this.state.playback_state === 'playing') {
+      this.setState({playback_state: 'paused'})
+    }
   }
 
   // componentDidMount() {
@@ -80,8 +92,20 @@ class App extends Component {
               <h1 className="App-title">Spotify Jukebox</h1>
             </header>
             <Login/>
-            <TransportControls playlist={this.state.playlist} playlist_next_track={this.playlist_next_track.bind(this)} socket={this.socket} auth_keys={auth_keys}/>
-            <Search playlist={this.state.playlist} add_to_playlist={this.add_to_playlist} socket={this.socket} auth_keys={auth_keys}/>
+            <TransportControls
+              playlist={this.state.playlist}
+              playlist_next_track={this.playlist_next_track.bind(this)}
+              playback_state={this.state.playback_state}
+              toggle_playback_state={this.state.toggle_playback_state.bind(this)}
+              socket={this.socket}
+              auth_keys={auth_keys}
+            />
+            <Search
+              playlist={this.state.playlist}
+              add_to_playlist={this.add_to_playlist}
+              socket={this.socket}
+              auth_keys={auth_keys}
+            />
             <ul>{this.state.playlist.map(function(list_item) {
               return <li>{list_item}</li>;
             })}</ul>
