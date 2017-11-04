@@ -7,6 +7,49 @@ class PlayPause extends Component {
     super(props);
     console.log(this.props);
     this.pause_playback = this.pause_playback.bind(this);
+    this.begin_playback = this.begin_playback.bind(this);
+    this.handle_click = this.handle_click.bind(this);
+  }
+
+  handle_click() {
+    if(this.props.playback_state === 'paused'){
+      this.props.toggle_playback_state();
+      this.begin_playback();
+    }
+    else {
+      this.props.toggle_playback_state();
+      this.pause_playback();
+    }
+  }
+
+  begin_playback() {
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player/devices',
+      headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+      json: true
+    };
+
+    // use the access token to access the Spotify Web API
+    request.get(options, (error, response, body) => {
+        // get active device before changing playback
+        let num_devices = body.devices.length;
+        let device_id = null;
+        for (let i = 0; i < num_devices; i++) {
+            if (body.devices[i].is_active === true) {
+                device_id = body.devices[i].id;
+            }
+        }
+        let options = {
+          url: 'https://api.spotify.com/v1/me/player/play',
+          headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+          device_id: device_id,
+          body: ''
+        };
+        request.put(options, function(error, response, body) {
+
+          console.log('Playing...');
+        });
+    });
   }
 
   pause_playback() {
@@ -35,12 +78,11 @@ class PlayPause extends Component {
           console.log('Pausing...');
         });
     });
-
   }
 
   render() {
     return (
-      <button type="button" onClick={this.pause_playback}>PlayPause</button>
+      <button type="button" onClick={this.handle_click}>PlayPause</button>
     );
   }
 }
