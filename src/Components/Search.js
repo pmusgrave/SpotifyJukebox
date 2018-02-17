@@ -57,6 +57,7 @@ class Search extends Component {
   }
 
   handleSubmit(event) {
+    console.log("form submitted");
     event.preventDefault();
     this.search_for_track(this.state.query);
     this.setState({query: ''});
@@ -68,7 +69,7 @@ class Search extends Component {
         <form onSubmit={this.handleSubmit}>
           <label>
             Search:
-            <input type="text" value={this.state.value} onChange={this.handleChange} />
+            <input type="text" value={this.state.query} onChange={this.handleChange} />
           </label>
           <input type="submit" value="Submit" />
         </form>
