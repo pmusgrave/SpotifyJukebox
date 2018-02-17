@@ -8,6 +8,8 @@ import Login from './Components/Login.js';
 import Search from './Components/Search.js';
 import TransportControls from './Components/TransportControls.js';
 
+const request = require('browser-request');
+
 var query_string = require('query-string');
 
 var parsed_hash = query_string.parse(window.location.hash);
@@ -24,7 +26,7 @@ class App extends Component {
       this.state = {
         authenticated: true,
         playlist: [],
-        playback_state: 'paused',
+        is_playing: this.get_is_playing(),
         toggle_playback_state: this.toggle_playback_state
       };
       this.socket = require('socket.io-client')('http://localhost:8888');
@@ -35,13 +37,32 @@ class App extends Component {
       //this.is_authenticated();
   }
 
+  get_is_playing() {
+    // this function may not be necessary, now that PlayPause checks
+    // is_playing on click
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player',
+      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+      json: true
+    };
+
+    // use the access token to access the Spotify Web API
+    request.get(options, (error, response, body) => {
+        let options = {
+          url: 'https://api.spotify.com/v1/me/player',
+          headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+          json: true
+        };
+        request.get(options, function(error, response, body) {
+          console.log('Account is_playing...');
+          console.log(body.is_playing);
+          return body.is_playing;
+        });
+    });
+  }
+
   toggle_playback_state() {
-    if (this.state.playback_state === 'paused') {
-      this.setState({playback_state: 'playing'})
-    }
-    else if(this.state.playback_state === 'playing') {
-      this.setState({playback_state: 'paused'})
-    }
+      this.setState({is_playing: !this.state.is_playing});
   }
 
   // componentDidMount() {
@@ -80,7 +101,9 @@ class App extends Component {
 
   playlist_next_track = () => {
     console.log('next track');
-    this.setState({playlist: this.state.playlist.slice(1)});
+    this.setState({playlist: this.state.playlist.slice(1),
+                   is_playing: true
+    });
   }
 
   render() {
@@ -95,7 +118,7 @@ class App extends Component {
             <TransportControls
               playlist={this.state.playlist}
               playlist_next_track={this.playlist_next_track.bind(this)}
-              playback_state={this.state.playback_state}
+              is_playing={this.state.is_playing}
               toggle_playback_state={this.state.toggle_playback_state.bind(this)}
               socket={this.socket}
               auth_keys={auth_keys}
@@ -106,6 +129,7 @@ class App extends Component {
               socket={this.socket}
               auth_keys={auth_keys}
             />
+            <h1>Playlist</h1>
             <ul>{this.state.playlist.map(function(list_item) {
               return <li>{list_item}</li>;
             })}</ul>

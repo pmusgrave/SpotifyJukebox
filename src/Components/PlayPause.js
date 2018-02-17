@@ -12,14 +12,31 @@ class PlayPause extends Component {
   }
 
   handle_click() {
-    if(this.props.playback_state === 'paused'){
-      this.props.toggle_playback_state();
-      this.begin_playback();
-    }
-    else {
-      this.props.toggle_playback_state();
-      this.pause_playback();
-    }
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player',
+      headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+      json: true
+    };
+
+    // use the access token to access the Spotify Web API
+    request.get(options, (error, response, body) => {
+        let options = {
+          url: 'https://api.spotify.com/v1/me/player',
+          headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+          json: true
+        };
+        request.get(options, (error, response, body) => {
+          //return body.is_playing;
+          if(body.is_playing) {
+            this.props.toggle_playback_state();
+            this.pause_playback();
+          }
+          else {
+            this.props.toggle_playback_state();
+            this.begin_playback();
+          }
+        });
+    });
   }
 
   begin_playback() {
