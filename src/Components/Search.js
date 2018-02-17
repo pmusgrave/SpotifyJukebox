@@ -15,7 +15,8 @@ class Search extends Component {
         albums : {},
         playlists : {},
         tracks : {}
-      }
+      },
+      show_results: false
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -57,10 +58,12 @@ class Search extends Component {
   }
 
   handleSubmit(event) {
-    console.log("form submitted");
     event.preventDefault();
     this.search_for_track(this.state.query);
-    this.setState({query: ''});
+    this.setState({
+      query: '',
+      show_results: true
+    });
   }
 
   render() {
@@ -73,16 +76,16 @@ class Search extends Component {
           </label>
           <input type="submit" value="Submit" />
         </form>
-
-
-        <SearchResult
-          playlist={this.props.playlist}
-          add_to_playlist={this.props.add_to_playlist}
-          title="Tracks"
-          results={this.state.results.tracks}
-          socket={this.props.socket}
-        />
-
+        
+        {this.state.show_results ?
+          <SearchResult
+            playlist={this.props.playlist}
+            add_to_playlist={this.props.add_to_playlist}
+            title="Tracks"
+            results={this.state.results.tracks}
+            socket={this.props.socket}
+          />
+        : null}
 
       </div>
     );

@@ -38,7 +38,8 @@ class SearchResult extends Component {
       // console.log('props')
       // console.log(this.props);
       return(
-        <h2>{this.props.title}</h2>
+        //<h2>{this.props.title}</h2>
+        null
       )
     }
   }
