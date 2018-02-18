@@ -68,7 +68,7 @@ class App extends Component {
           if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
             this.play_next_track(this.state.playlist[0]);
           }
-          
+
         });
     });
   }
@@ -178,51 +178,52 @@ class App extends Component {
   }
 
   play_next_track(track_id) {
-
-    this.setState({player: {
-        is_playing: true,
-        paused_by_user: false,
-      }
-    })
-
-    this.playlist_next_track(); // removes next item from playlist
-
-    console.log(JSON.stringify({"uris": [track_id]}));
-    let options = {
-      url: 'https://api.spotify.com/v1/me/player/devices',
-      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
-      json: true
-    };
-
-    request.get(options, (error, response, body) => {
-        // get active device before changing playback
-        if(body.devices != undefined){
-          let num_devices = body.devices.length;
-          let device_id = null;
-          for (let i = 0; i < num_devices; i++) {
-              if (body.devices[i].is_active === true) {
-                  device_id = body.devices[i].id;
-              }
-          }
-          let options = {
-            url: 'https://api.spotify.com/v1/me/player/play',
-            headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
-            device_id: device_id,
-            json: true,
-            body: JSON.stringify({"uris": [track_id]})
-          };
-          request.put(options, function(error, response, body) {
-            console.log(response);
-            console.log('Next track... ' + track_id);
-          });
+    if(track_id != null) {
+      this.setState({player: {
+          is_playing: true,
+          paused_by_user: false,
         }
-    });
+      })
+
+      this.playlist_next_track(); // removes next item from playlist
+
+      console.log(JSON.stringify({"uris": [track_id]}));
+      let options = {
+        url: 'https://api.spotify.com/v1/me/player/devices',
+        headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+        json: true
+      };
+
+      request.get(options, (error, response, body) => {
+          // get active device before changing playback
+          if(body.devices != undefined){
+            let num_devices = body.devices.length;
+            let device_id = null;
+            for (let i = 0; i < num_devices; i++) {
+                if (body.devices[i].is_active === true) {
+                    device_id = body.devices[i].id;
+                }
+            }
+            let options = {
+              url: 'https://api.spotify.com/v1/me/player/play',
+              headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+              device_id: device_id,
+              json: true,
+              body: JSON.stringify({"uris": [track_id]})
+            };
+            request.put(options, function(error, response, body) {
+              console.log(response);
+              console.log('Next track... ' + track_id);
+            });
+          }
+      });
+    }
   }
 
   playlist_next_track = () => {
     console.log('next track');
     this.setState({playlist: this.state.playlist.slice(1)});
-    this.begin_playback();
+    //this.begin_playback();
     //this.toggle_playback_state();
   }
 
