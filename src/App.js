@@ -26,20 +26,25 @@ class App extends Component {
       this.state = {
         authenticated: true,
         playlist: [],
-        is_playing: this.get_is_playing(),
-        toggle_playback_state: this.toggle_playback_state
+        player: {
+          is_playing: false,
+          paused_by_user: true,
+          playlist_scheduler: this.playlist_scheduler
+        },
+        toggle_playback_state: this.toggle_playback_state,
       };
       this.socket = require('socket.io-client')('http://localhost:8888');
       this.socket.on('playlist_add', (uri) => {
         console.log('playlist_add ' + uri);
         this.add_to_playlist(uri);
       });
+
+      this.playlist_scheduler();
       //this.is_authenticated();
   }
 
-  get_is_playing() {
-    // this function may not be necessary, now that PlayPause checks
-    // is_playing on click
+  update_playback_state() {
+    console.log("Getting playback state...");
     let options = {
       url: 'https://api.spotify.com/v1/me/player',
       headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
@@ -53,16 +58,27 @@ class App extends Component {
           headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
           json: true
         };
-        request.get(options, function(error, response, body) {
-          console.log('Account is_playing...');
-          console.log(body.is_playing);
-          return body.is_playing;
+        request.get(options, (error, response, body) => {
+          //return body.is_playing;
+          this.setState({player: {
+            is_playing: body.is_playing,
+            paused_by_user: this.state.player.paused_by_user
+          }});
+
+          if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
+            this.play_next_track(this.state.playlist[0]);
+          }
+          
         });
     });
   }
 
   toggle_playback_state() {
-      this.setState({is_playing: !this.state.is_playing});
+      this.setState({player: {
+          is_playing: !this.state.player.is_playing,
+          paused_by_user: !this.state.player.paused_by_user
+        }
+      });
   }
 
   // componentDidMount() {
@@ -99,11 +115,121 @@ class App extends Component {
     this.setState({playlist: this.state.playlist.concat([value])});
   }
 
+  begin_playback() {
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player/devices',
+      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+      json: true
+    };
+
+    // use the access token to access the Spotify Web API
+    request.get(options, (error, response, body) => {
+        // get active device before changing playback
+        let num_devices = body.devices.length;
+        let device_id = null;
+        for (let i = 0; i < num_devices; i++) {
+            if (body.devices[i].is_active === true) {
+                device_id = body.devices[i].id;
+            }
+        }
+        let options = {
+          url: 'https://api.spotify.com/v1/me/player/play',
+          headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+          device_id: device_id,
+          body: ''
+        };
+        request.put(options, function(error, response, body) {
+
+          console.log('Playing...');
+        });
+    });
+  }
+
+  pause_playback() {
+    this.setState({player:{
+      is_playing: false,
+      paused_by_user: true
+    }})
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player/devices',
+      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+      json: true
+    };
+
+    // use the access token to access the Spotify Web API
+    request.get(options, (error, response, body) => {
+        // get active device before changing playback
+        let num_devices = body.devices.length;
+        let device_id = null;
+        for (let i = 0; i < num_devices; i++) {
+            if (body.devices[i].is_active === true) {
+                device_id = body.devices[i].id;
+            }
+        }
+        let options = {
+          url: 'https://api.spotify.com/v1/me/player/pause',
+          headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+          device_id: device_id
+        };
+        request.put(options, function(error, response, body) {
+          console.log('Pausing...');
+        });
+    });
+  }
+
+  play_next_track(track_id) {
+
+    this.setState({player: {
+        is_playing: true,
+        paused_by_user: false,
+      }
+    })
+
+    this.playlist_next_track(); // removes next item from playlist
+
+    console.log(JSON.stringify({"uris": [track_id]}));
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player/devices',
+      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+      json: true
+    };
+
+    request.get(options, (error, response, body) => {
+        // get active device before changing playback
+        if(body.devices != undefined){
+          let num_devices = body.devices.length;
+          let device_id = null;
+          for (let i = 0; i < num_devices; i++) {
+              if (body.devices[i].is_active === true) {
+                  device_id = body.devices[i].id;
+              }
+          }
+          let options = {
+            url: 'https://api.spotify.com/v1/me/player/play',
+            headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+            device_id: device_id,
+            json: true,
+            body: JSON.stringify({"uris": [track_id]})
+          };
+          request.put(options, function(error, response, body) {
+            console.log(response);
+            console.log('Next track... ' + track_id);
+          });
+        }
+    });
+  }
+
   playlist_next_track = () => {
     console.log('next track');
-    this.setState({playlist: this.state.playlist.slice(1),
-                   is_playing: true
-    });
+    this.setState({playlist: this.state.playlist.slice(1)});
+    this.begin_playback();
+    //this.toggle_playback_state();
+  }
+
+  playlist_scheduler = () => {
+    setInterval(() => {
+      this.update_playback_state();
+    },3500)
   }
 
   render() {
@@ -118,7 +244,10 @@ class App extends Component {
             <TransportControls
               playlist={this.state.playlist}
               playlist_next_track={this.playlist_next_track.bind(this)}
-              is_playing={this.state.is_playing}
+              player={this.state.player}
+              begin_playback={this.begin_playback.bind(this)}
+              pause_playback={this.pause_playback.bind(this)}
+              play_next_track={this.play_next_track.bind(this)}
               toggle_playback_state={this.state.toggle_playback_state.bind(this)}
               socket={this.socket}
               auth_keys={auth_keys}

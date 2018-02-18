@@ -14,10 +14,13 @@ class TransportControls extends Component {
       <div>
         <PlayPause
           auth_keys={this.props.auth_keys}
-          is_playing={this.props.is_playing}
-          toggle_playback_state={this.props.toggle_playback_state}
+          player={this.props.player}
+          begin_playback={this.props.begin_playback}
+          pause_playback={this.props.pause_playback}
+          toggle_playback_state={this.props.toggle_playback_state.bind(this)}
         />
         <Next
+          play_next_track={this.props.play_next_track}
           playlist_next_track={this.props.playlist_next_track}
           auth_keys={this.props.auth_keys}
           track_id={this.props.playlist[0]}
