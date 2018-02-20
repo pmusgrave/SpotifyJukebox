@@ -32,7 +32,7 @@ class Search extends Component {
 
     request.get(options, (error, response, body) => {
         let options = {
-          url: 'https://api.spotify.com/v1/search' + '/?' + querystring.stringify({"q" : query}) + '&type=album,artist,playlist,track',
+          url: 'https://api.spotify.com/v1/search' + '/?' + querystring.stringify({"q" : query}) + '&type=album,artist,playlist,track&limit=50',
           headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
           json: true,
         };
@@ -76,7 +76,7 @@ class Search extends Component {
           </label>
           <input type="submit" value="Submit" />
         </form>
-        
+
         {this.state.show_results ?
           <SearchResult
             playlist={this.props.playlist}

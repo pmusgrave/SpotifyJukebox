@@ -19,11 +19,16 @@ class SearchResult extends Component {
   }
 
   render() {
+    var styles = {
+      overflow:"auto",
+      height:"40vh"
+    }
+
     if (this.props.results != undefined && this.props.results.hasOwnProperty('items')) {
       return(
-        <div>
+        <div >
           <h2>{this.props.title}</h2>
-          <div>
+          <div style={styles}>
             {this.props.results.items.map((list_item) => {
               return <div>
                 <label>{list_item["name"]}</label>
