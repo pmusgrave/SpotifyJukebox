@@ -29,8 +29,10 @@ class App extends Component {
         player: {
           is_playing: false,
           paused_by_user: true,
+          item: null
         },
         scheduler_interval: 5000,
+        timer: null
       };
       this.socket = require('socket.io-client')('http://localhost:8888');
       this.socket.on('playlist_add', (uri) => {
@@ -58,10 +60,8 @@ class App extends Component {
   set_authenticated_state() {
     // it might be okay to simply check if access_token != 'invalid_token'
 
-    // not exactly sure when or from where this function should be called
-    // because you don't want to query the spotify API on every render.
-    // but calling it in the app constructor, for instance, might result in the
-    // state being read before app is authenticated
+    // currently calling this function initially until login is successful,
+    // then calling it on a 15 minute interval
 
     let options = {
       url: 'https://api.spotify.com/v1/me',
@@ -80,9 +80,14 @@ class App extends Component {
   }
 
   playlist_scheduler = () => {
-    setTimeout(() => {
-      this.update_playback_state();
-    },this.state.scheduler_interval)
+    clearTimeout(this.state.timer);
+    this.setState(
+      {
+      timer: setTimeout(() => {
+        this.update_playback_state();
+        },this.state.scheduler_interval)
+      }
+    )
   }
 
   update_playback_state() {
@@ -100,24 +105,25 @@ class App extends Component {
           player: {
             is_playing: body.is_playing,
             paused_by_user: this.state.player.paused_by_user,
-            current_track: body.item
+            item: body.item
           }
         }
       );
 
       if(body.item.duration_ms != null) {
-        this.setState({scheduler_interval:body.item.duration_ms - body.progress_ms});
+        this.setState({scheduler_interval: (body.item.duration_ms - body.progress_ms + 1000)});
+      }
+      else {
+        this.setState({scheduler_interval: (5000)});
       }
 
       if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
         this.play_next_track(this.state.playlist[0]);
         //clearInterval(this.state.scheduler);
-        //this.playlist_scheduler();
       }
 
-      //this.playlist_scheduler();
+      this.playlist_scheduler();
     });
-    this.playlist_scheduler();
   }
 
   toggle_playback_state() {
@@ -129,13 +135,12 @@ class App extends Component {
   }
 
   add_to_playlist = (value) => {
-    console.log('value is ');
-    console.log(value);
+    //console.log('value is ' + value);
     this.setState({playlist: this.state.playlist.concat([value])});
   }
 
   playlist_next_track = () => {
-    console.log('next track');
+    //console.log('next track');
     this.setState({playlist: this.state.playlist.slice(1)});
     //this.begin_playback();
     //this.toggle_playback_state();
@@ -211,9 +216,11 @@ class App extends Component {
         }
       })
 
+      //this.update_playback_state();
+      this.playlist_scheduler();
       this.playlist_next_track(); // removes next item from playlist
 
-      console.log(JSON.stringify({"uris": [track_id]}));
+      //console.log(JSON.stringify({"uris": [track_id]}));
       let options = {
         url: 'https://api.spotify.com/v1/me/player/devices',
         headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
@@ -238,7 +245,7 @@ class App extends Component {
               body: JSON.stringify({"uris": [track_id]})
             };
             request.put(options, function(error, response, body) {
-              console.log(response);
+              //console.log(response);
               console.log('Next track... ' + track_id);
             });
           }
@@ -272,7 +279,7 @@ class App extends Component {
               socket={this.socket}
               auth_keys={auth_keys}
             />
-            <Playlist playlist={this.state.playlist}/>
+            <Playlist current_track={this.state.player.item} playlist={this.state.playlist}/>
           </div>
       );
     }
