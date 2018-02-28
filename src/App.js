@@ -24,13 +24,13 @@ class App extends Component {
   constructor(props) {
       super(props);
       this.state = {
-        authenticated: true,
+        authenticated: false,
         playlist: [],
         player: {
           is_playing: false,
           paused_by_user: true,
-          playlist_scheduler: this.playlist_scheduler,
         },
+        scheduler_interval: 5000,
       };
       this.socket = require('socket.io-client')('http://localhost:8888');
       this.socket.on('playlist_add', (uri) => {
@@ -38,6 +38,7 @@ class App extends Component {
         this.add_to_playlist(uri);
       });
 
+      this.authentication_scheduler();
       this.playlist_scheduler();
       //this.is_authenticated();
   }
@@ -48,7 +49,13 @@ class App extends Component {
   //   })
   // }
 
-  // is_authenticated() {
+  authentication_scheduler(){
+    setInterval(() => {
+      this.set_authenticated_state()
+    }, 900000)
+  }
+
+  set_authenticated_state() {
     // it might be okay to simply check if access_token != 'invalid_token'
 
     // not exactly sure when or from where this function should be called
@@ -56,35 +63,31 @@ class App extends Component {
     // but calling it in the app constructor, for instance, might result in the
     // state being read before app is authenticated
 
-    // let options = {
-    //   url: 'https://api.spotify.com/v1/me',
-    //   headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
-    //   json: true
-    // };
+    let options = {
+      url: 'https://api.spotify.com/v1/me',
+      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+      json: true
+    };
 
-    // use the access token to access the Spotify Web API
-    // request.get(options, (error, response, body) => {
-    //     if (!error && response.statusCode === 200) {
-    //       this.state.authenticated = true;
-    //     }
-    // });
-  // }
+    request.get(options, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+          this.setState({authenticated: true});
+        }
+        else {
+          this.setState({authenticated: false});
+        }
+    });
+  }
 
   playlist_scheduler = () => {
-    if (this.state.player.current_track != null){
-      this.setState({scheduler: setInterval(() => {
-        this.update_playback_state();
-      },this.state.player.current_track.duration_ms)});
-    }
-    else {
-      this.setState({scheduler: setTimeout(() => {
-        this.update_playback_state();
-      },5000)});
-    }
+    setTimeout(() => {
+      this.update_playback_state();
+    },this.state.scheduler_interval)
   }
 
   update_playback_state() {
-    console.log("Getting playback state...");
+    console.log("Getting playback state... " + this.state.scheduler_interval);
+
     let options = {
       url: 'https://api.spotify.com/v1/me/player',
       headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
@@ -92,18 +95,29 @@ class App extends Component {
     };
 
     request.get(options, (error, response, body) => {
-      this.setState({player: {
-        is_playing: body.is_playing,
-        paused_by_user: this.state.player.paused_by_user,
-        current_track: body.item
-      }});
+      this.setState(
+        {
+          player: {
+            is_playing: body.is_playing,
+            paused_by_user: this.state.player.paused_by_user,
+            current_track: body.item
+          }
+        }
+      );
+
+      if(body.item.duration_ms != null) {
+        this.setState({scheduler_interval:body.item.duration_ms - body.progress_ms});
+      }
 
       if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
         this.play_next_track(this.state.playlist[0]);
         //clearInterval(this.state.scheduler);
         //this.playlist_scheduler();
       }
+
+      //this.playlist_scheduler();
     });
+    this.playlist_scheduler();
   }
 
   toggle_playback_state() {
@@ -233,14 +247,13 @@ class App extends Component {
   }
 
   render() {
-    // if(true) {
+    if(this.state.authenticated) {
       return (
           <div className="App">
             <header className="App-header">
               <img src={logo} className="App-logo" alt="logo" />
               <h1 className="App-title">Spotify Jukebox</h1>
             </header>
-            <Login/>
             <Search
               playlist={this.state.playlist}
               add_to_playlist={this.add_to_playlist}
@@ -262,18 +275,20 @@ class App extends Component {
             <Playlist playlist={this.state.playlist}/>
           </div>
       );
-    // }
-    // else {
-    //   return (
-    //     <div className="App">
-    //       <header className="App-header">
-    //         <img src={logo} className="App-logo" alt="logo" />
-    //         <h1 className="App-title">Spotify Jukebox</h1>
-    //       </header>
-    //       <Login />
-    //     </div>
-    //   );
-    // }
+    }
+    else {
+      this.set_authenticated_state();
+      return (
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">Spotify Jukebox</h1>
+          </header>
+          <Login />
+        </div>
+      );
+    }
+
   }
 }
 
