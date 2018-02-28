@@ -1,9 +1,9 @@
 
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
-import logo from './logo.jpg';
+import logo from './logo.png';
 import './App.css';
-import Input from './Components/Input.js';
+import Playlist from './Components/Playlist.js';
 import Login from './Components/Login.js';
 import Search from './Components/Search.js';
 import TransportControls from './Components/TransportControls.js';
@@ -29,9 +29,8 @@ class App extends Component {
         player: {
           is_playing: false,
           paused_by_user: true,
-          playlist_scheduler: this.playlist_scheduler
+          playlist_scheduler: this.playlist_scheduler,
         },
-        toggle_playback_state: this.toggle_playback_state,
       };
       this.socket = require('socket.io-client')('http://localhost:8888');
       this.socket.on('playlist_add', (uri) => {
@@ -41,44 +40,6 @@ class App extends Component {
 
       this.playlist_scheduler();
       //this.is_authenticated();
-  }
-
-  update_playback_state() {
-    console.log("Getting playback state...");
-    let options = {
-      url: 'https://api.spotify.com/v1/me/player',
-      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
-      json: true
-    };
-
-    // use the access token to access the Spotify Web API
-    request.get(options, (error, response, body) => {
-        let options = {
-          url: 'https://api.spotify.com/v1/me/player',
-          headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
-          json: true
-        };
-        request.get(options, (error, response, body) => {
-          //return body.is_playing;
-          this.setState({player: {
-            is_playing: body.is_playing,
-            paused_by_user: this.state.player.paused_by_user
-          }});
-
-          if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
-            this.play_next_track(this.state.playlist[0]);
-          }
-
-        });
-    });
-  }
-
-  toggle_playback_state() {
-      this.setState({player: {
-          is_playing: !this.state.player.is_playing,
-          paused_by_user: !this.state.player.paused_by_user
-        }
-      });
   }
 
   // componentDidMount() {
@@ -109,10 +70,61 @@ class App extends Component {
     // });
   // }
 
+  playlist_scheduler = () => {
+    if (this.state.player.current_track != null){
+      this.setState({scheduler: setInterval(() => {
+        this.update_playback_state();
+      },this.state.player.current_track.duration_ms)});
+    }
+    else {
+      this.setState({scheduler: setTimeout(() => {
+        this.update_playback_state();
+      },5000)});
+    }
+  }
+
+  update_playback_state() {
+    console.log("Getting playback state...");
+    let options = {
+      url: 'https://api.spotify.com/v1/me/player',
+      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
+      json: true
+    };
+
+    request.get(options, (error, response, body) => {
+      this.setState({player: {
+        is_playing: body.is_playing,
+        paused_by_user: this.state.player.paused_by_user,
+        current_track: body.item
+      }});
+
+      if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
+        this.play_next_track(this.state.playlist[0]);
+        //clearInterval(this.state.scheduler);
+        //this.playlist_scheduler();
+      }
+    });
+  }
+
+  toggle_playback_state() {
+      this.setState({player: {
+          is_playing: !this.state.player.is_playing,
+          paused_by_user: !this.state.player.paused_by_user
+        }
+      });
+  }
+
   add_to_playlist = (value) => {
     console.log('value is ');
     console.log(value);
     this.setState({playlist: this.state.playlist.concat([value])});
+  }
+
+  playlist_next_track = () => {
+    console.log('next track');
+    this.setState({playlist: this.state.playlist.slice(1)});
+    //this.begin_playback();
+    //this.toggle_playback_state();
   }
 
   begin_playback() {
@@ -220,19 +232,6 @@ class App extends Component {
     }
   }
 
-  playlist_next_track = () => {
-    console.log('next track');
-    this.setState({playlist: this.state.playlist.slice(1)});
-    //this.begin_playback();
-    //this.toggle_playback_state();
-  }
-
-  playlist_scheduler = () => {
-    setInterval(() => {
-      this.update_playback_state();
-    },3500)
-  }
-
   render() {
     // if(true) {
       return (
@@ -242,6 +241,13 @@ class App extends Component {
               <h1 className="App-title">Spotify Jukebox</h1>
             </header>
             <Login/>
+            <Search
+              playlist={this.state.playlist}
+              add_to_playlist={this.add_to_playlist}
+              socket={this.socket}
+              auth_keys={auth_keys}
+            />
+            <hr/>
             <TransportControls
               playlist={this.state.playlist}
               playlist_next_track={this.playlist_next_track.bind(this)}
@@ -249,20 +255,11 @@ class App extends Component {
               begin_playback={this.begin_playback.bind(this)}
               pause_playback={this.pause_playback.bind(this)}
               play_next_track={this.play_next_track.bind(this)}
-              toggle_playback_state={this.state.toggle_playback_state.bind(this)}
+              toggle_playback_state={this.toggle_playback_state.bind(this)}
               socket={this.socket}
               auth_keys={auth_keys}
             />
-            <Search
-              playlist={this.state.playlist}
-              add_to_playlist={this.add_to_playlist}
-              socket={this.socket}
-              auth_keys={auth_keys}
-            />
-            <h1>Playlist</h1>
-            <ul>{this.state.playlist.map(function(list_item) {
-              return <li>{list_item}</li>;
-            })}</ul>
+            <Playlist playlist={this.state.playlist}/>
           </div>
       );
     // }
