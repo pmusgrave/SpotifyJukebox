@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Link } from 'react-router-dom';
 import logo from './logo.png';
 import './App.css';
 import Playlist from './Components/Playlist.js';
+import Parties from './Components/Parties.js';
 import Login from './Components/Login.js';
 import Search from './Components/Search.js';
 import TransportControls from './Components/TransportControls.js';
@@ -81,6 +82,11 @@ class App extends Component {
 
   playlist_scheduler = () => {
     clearTimeout(this.state.timer);
+
+    // emit new room signal without a new room to grab existing rooms
+    // from server
+    this.socket.emit('new_room', null);
+
     this.setState(
       {
       timer: setTimeout(() => {
@@ -261,6 +267,7 @@ class App extends Component {
               <img src={logo} className="App-logo" alt="logo" />
               <h1 className="App-title">Spotify Jukebox</h1>
             </header>
+            <Parties socket={this.socket}/>
             <Search
               playlist={this.state.playlist}
               add_to_playlist={this.add_to_playlist}

@@ -21,7 +21,6 @@ var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-// removed client_id and client_secret from github
 
 /**
  * Generates a random string containing numbers and letters
@@ -163,12 +162,15 @@ app.get('/refresh_token', nocache, function(req, res) {
 /******************************************************
                    SOCKET.IO
 ******************************************************/
+var rooms = [];
+
 io.on('connection', function(socket){
   // connections should only happen after user authenticates with Spotify
   // OR, I might have to create a socket client object initially,
   // and emit a signal when auth is successful and do
   // everything in the auth_success callback
   console.log('a user connected');
+  socket.emit('updated_room_list', (rooms));
 
   // if client socket connection happens on page load, then,
   // use this event after auth
@@ -179,6 +181,15 @@ io.on('connection', function(socket){
         socket.join(room);
       });
     });
+  });
+
+  socket.on('new_room', (room) => {
+    console.log("room created: " + room);
+    if (room != null) {
+      rooms.push(room);
+    }
+    console.log(rooms);
+    socket.emit('updated_room_list', (rooms));
   });
 
   socket.on('try_to_join_room', (user, room) => {
@@ -193,9 +204,9 @@ io.on('connection', function(socket){
     io.sockets.emit('playlist_add', uri);
   });
 
-  socket.on('next_track', (track_id) => {
-    console.log('next_track ' + track_id);
-    io.sockets.emit('next_track', track_id);
+  socket.on("next_track", (track_id) => {
+    console.log("next_track " + track_id);
+    io.sockets.emit("next_track", track_id);
   })
 });
 
