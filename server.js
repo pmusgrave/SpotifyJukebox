@@ -203,6 +203,7 @@ io.on('connection', function(socket){
     }
     else {
       console.log("room already exists");
+      socket.emit('updated_room_list', (rooms));
     }
   });
 

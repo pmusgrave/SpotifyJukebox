@@ -24,10 +24,11 @@ class Parties extends Component {
   handleSubmit(event) {
     event.preventDefault();
     this.props.socket.emit('new_room', this.state.room_name);
-    this.join_room(this.state.room_name);
+    //this.join_room(this.state.room_name);
     this.setState({
       room_name: '',
     });
+    console.log(this.state.rooms);
   }
 
   join_room(room) {
@@ -36,7 +37,7 @@ class Parties extends Component {
   }
 
   render() {
-    if (this.props.results != undefined && this.props.results.hasOwnProperty('items')) {
+    if (this.state.rooms != undefined) {
       return(
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -47,9 +48,10 @@ class Parties extends Component {
           <input type="submit" value="Submit" />
         </form>
 
-        <ul>{this.state.rooms.map(function(list_item) {
+        <ul>{this.state.rooms.map((list_item) => {
           return <div>
-            <li>{list_item.name}</li>;
+            <li>{list_item.name}</li>
+            <button onClick={this.join_room.bind(this,list_item.name)}>Join</button>
           </div>
         })}</ul>
       </div>
