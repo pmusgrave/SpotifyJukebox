@@ -24,27 +24,50 @@ class Parties extends Component {
   handleSubmit(event) {
     event.preventDefault();
     this.props.socket.emit('new_room', this.state.room_name);
+    this.join_room(this.state.room_name);
     this.setState({
       room_name: '',
     });
   }
 
-  render() {
-    return(
-    <div>
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          Add a new party:
-          <input type="text" value={this.state.room_name} onChange={this.handleChange} />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+  join_room(room) {
+    console.log("let me in")
+    this.props.socket.emit('try_to_join_room', 'p-funk',room);
+  }
 
-      <ul>{this.state.rooms.map(function(list_item) {
-        return <li>{list_item}</li>;
-      })}</ul>
-    </div>
-    )
+  render() {
+    if (this.props.results != undefined && this.props.results.hasOwnProperty('items')) {
+      return(
+      <div>
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            Add a new party:
+            <input type="text" value={this.state.room_name} onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+
+        <ul>{this.state.rooms.map(function(list_item) {
+          return <div>
+            <li>{list_item.name}</li>;
+          </div>
+        })}</ul>
+      </div>
+      )
+    }
+    else {
+      return(
+        <div>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              Add a new party:
+              <input type="text" value={this.state.room_name} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+        </div>
+      )
+    }
   }
 }
 

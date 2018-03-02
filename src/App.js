@@ -116,7 +116,7 @@ class App extends Component {
         }
       );
 
-      if(body.item.duration_ms != null) {
+      if(body.item.duration_ms != null && body.item.duration_ms != undefined) {
         this.setState({scheduler_interval: (body.item.duration_ms - body.progress_ms + 1000)});
       }
       else {
@@ -291,7 +291,7 @@ class App extends Component {
       );
     }
     else {
-      this.set_authenticated_state();
+      this.set_authenticated_state(); //this is bad
       return (
         <div className="App">
           <header className="App-header">

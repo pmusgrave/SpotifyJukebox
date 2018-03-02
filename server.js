@@ -163,40 +163,55 @@ app.get('/refresh_token', nocache, function(req, res) {
                    SOCKET.IO
 ******************************************************/
 var rooms = [];
+class Room {
+  constructor(room_name) {
+    this.name = room_name
+    this.users = [];
+  }
+}
+
+// will change to map instead of iterating through, this is just quick and dirty
+function get_room(room_name) {
+  for(let i = 0; i < rooms.length; i++) {
+    if(rooms[i].name == room_name){
+      return rooms[i];
+    }
+  }
+}
+
+function room_exists(room_name) {
+  return(get_room(room_name) != undefined);
+}
 
 io.on('connection', function(socket){
   // connections should only happen after user authenticates with Spotify
   // OR, I might have to create a socket client object initially,
   // and emit a signal when auth is successful and do
   // everything in the auth_success callback
+
   console.log('a user connected');
   socket.emit('updated_room_list', (rooms));
 
-  // if client socket connection happens on page load, then,
-  // use this event after auth
-  socket.on('authenticated', () => {
-    socket.on('try_to_join_room', (user, room) => {
-      room_auth(function(){
-        // callback function called if user is allowed to join room
-        socket.join(room);
-      });
-    });
-  });
-
   socket.on('new_room', (room) => {
-    console.log("room created: " + room);
-    if (room != null) {
-      rooms.push(room);
+    if(!room_exists(room)){
+      console.log("room created: " + room);
+      if (room != null) {
+        rooms.push(new Room(room));
+      }
+      // console.log(rooms);
+      socket.emit('updated_room_list', (rooms));
     }
-    console.log(rooms);
-    socket.emit('updated_room_list', (rooms));
+    else {
+      console.log("room already exists");
+    }
   });
 
-  socket.on('try_to_join_room', (user, room) => {
-    room_auth(function(){
-      // callback function called if user is allowed to join room
-      socket.join(room);
-    });
+  socket.on('try_to_join_room', (user, room_name) => {
+    if(room_exists(room_name)){
+      //room.users.push(user);
+      get_room(room_name).users.push(user);
+      console.log(rooms);
+    }
   });
 
   socket.on('playlist_add', (uri) => {
