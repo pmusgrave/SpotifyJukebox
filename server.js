@@ -162,6 +162,7 @@ app.get('/refresh_token', nocache, function(req, res) {
 /******************************************************
                    SOCKET.IO
 ******************************************************/
+var clients = [];
 var rooms = [];
 class Room {
   constructor(room_name) {
@@ -190,7 +191,13 @@ io.on('connection', function(socket){
   // everything in the auth_success callback
 
   console.log('a user connected');
+  clients.push(socket);
   socket.emit('updated_room_list', (rooms));
+
+  socket.on("disconnect", function() {
+    var i = clients.indexOf(socket);
+    clients.splice(i,1);
+  })
 
   socket.on('new_room', (room) => {
     if(!room_exists(room)){
@@ -207,10 +214,10 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on('try_to_join_room', (user, room_name) => {
+  socket.on('try_to_join_room', (socket, room_name) => {
     if(room_exists(room_name)){
       //room.users.push(user);
-      get_room(room_name).users.push(user);
+      get_room(room_name).users.push(socket);
       console.log(rooms);
     }
   });
