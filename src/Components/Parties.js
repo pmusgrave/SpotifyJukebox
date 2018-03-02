@@ -32,7 +32,7 @@ class Parties extends Component {
   }
 
   join_room(room) {
-    console.log("let me in");
+    console.log("let me in " + room);
     this.props.socket.emit('try_to_join_room', this.props.socket.id,room);
   }
 

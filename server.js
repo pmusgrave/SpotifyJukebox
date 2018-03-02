@@ -162,7 +162,9 @@ app.get('/refresh_token', nocache, function(req, res) {
 /******************************************************
                    SOCKET.IO
 ******************************************************/
-var clients = [];
+var clients = new Map();
+// Would prefer to use a map for rooms, but socket.io does not allow
+// transmitting map types. Using array of objects instead.
 var rooms = [];
 class Room {
   constructor(room_name) {
@@ -171,7 +173,7 @@ class Room {
   }
 }
 
-// will change to map instead of iterating through, this is just quick and dirty
+// will improve instead of iterating through linearly, this is just quick and dirty
 function get_room(room_name) {
   for(let i = 0; i < rooms.length; i++) {
     if(rooms[i].name == room_name){
@@ -190,13 +192,12 @@ io.on('connection', function(socket){
   // and emit a signal when auth is successful and do
   // everything in the auth_success callback
 
-  console.log('a user connected');
-  clients.push(socket);
-  socket.emit('updated_room_list', (rooms));
+  console.log('a user connected. id: ' + socket.id);
+  clients.set(socket.id, socket);
+  socket.emit('updated_room_list', rooms);
 
   socket.on("disconnect", function() {
-    var i = clients.indexOf(socket);
-    clients.splice(i,1);
+    clients.delete(socket.id);
   })
 
   socket.on('new_room', (room) => {
@@ -206,11 +207,11 @@ io.on('connection', function(socket){
         rooms.push(new Room(room));
       }
       // console.log(rooms);
-      socket.emit('updated_room_list', (rooms));
+      socket.emit('updated_room_list', rooms);
     }
     else {
       console.log("room already exists");
-      socket.emit('updated_room_list', (rooms));
+      socket.emit('updated_room_list', rooms);
     }
   });
 
