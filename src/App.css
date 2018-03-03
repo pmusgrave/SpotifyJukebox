@@ -21,7 +21,29 @@
   font-size: large;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.Parties {
+  display: inline-block;
+  margin-top: 10px;
+  width: 500px;
+  height: 30vh;
+  border-right: 1px solid white;
+  text-align: left;
+  vertical-align: top;
+}
+
+.Search {
+  display: inline-block;
+  width: 70vh;
+  height: 30vh;
+  vertical-align: top;
+}
+
+#top {
+
+}
+
+#bottom {
+  bottom: 0;
+  width: 100%;
+  position:absolute;
 }

@@ -68,7 +68,7 @@ class Search extends Component {
 
   render() {
     return (
-      <div>
+      <span className="Search">
         <form onSubmit={this.handleSubmit}>
           <label>
             Search:
@@ -87,7 +87,7 @@ class Search extends Component {
           />
         : null}
 
-      </div>
+      </span>
     );
   }
 }

@@ -40,7 +40,7 @@ class Parties extends Component {
   render() {
     if (this.state.rooms != undefined) {
       return(
-      <div>
+      <span className="Parties">
         <form onSubmit={this.handleSubmit}>
           <label>
             Add a new party:
@@ -50,17 +50,17 @@ class Parties extends Component {
         </form>
 
         <ul>{this.state.rooms.map((list_item) => {
-          return <div>
-            <li>{list_item.name}</li>
+          return <span>
+            <label>{list_item.name}</label>
             <button onClick={this.join_room.bind(this,list_item.name)}>Join</button>
-          </div>
+          </span>
         })}</ul>
-      </div>
+      </span>
       )
     }
     else {
       return(
-        <div>
+        <span className="Parties">
           <form onSubmit={this.handleSubmit}>
             <label>
               Add a new party:
@@ -68,7 +68,7 @@ class Parties extends Component {
             </label>
             <input type="submit" value="Submit" />
           </form>
-        </div>
+        </span>
       )
     }
   }

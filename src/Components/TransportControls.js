@@ -10,7 +10,7 @@ class TransportControls extends Component {
 
   render() {
     return(
-      <div>
+      <span>
         <PlayPause
           auth_keys={this.props.auth_keys}
           player={this.props.player}
@@ -25,7 +25,7 @@ class TransportControls extends Component {
           track_id={this.props.playlist[0]}
           socket={this.props.socket}
         />
-      </div>
+      </span>
     );
   }
 }
