@@ -84,6 +84,9 @@ class App extends Component {
   }
 
   playlist_scheduler = () => {
+    console.log("ding");
+    console.log(this.state.player);
+    console.log(this.state.scheduler_interval);
     clearTimeout(this.state.timer);
 
     // emit new room signal without a new room to grab existing rooms

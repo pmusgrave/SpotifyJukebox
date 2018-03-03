@@ -292,9 +292,18 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on("next_track", (track_id) => {
-    console.log("next_track " + track_id);
-    io.sockets.emit("next_track", track_id);
+  socket.on("next_track", (client, track_id) => {
+    let room = get_room(clients.get(client).current_room);
+    if(room != null){
+      room.playlist = room.playlist.slice(1);
+      console.log(room)
+
+      console.log("next_track " + track_id);
+      io.sockets.emit("next_track", track_id);
+    }
+    else {
+      console.log("not in a room. get a room.");
+    }
   })
 });
 

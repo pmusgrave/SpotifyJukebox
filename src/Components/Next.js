@@ -13,7 +13,8 @@ class Next extends Component {
   }
 
   handle_next_click = (track_id) => {
-    this.props.socket.emit('next_track', track_id);
+    console.log(this.props.socket.id)
+    this.props.socket.emit('next_track', this.props.socket.id, track_id);
   }
 
   render() {
