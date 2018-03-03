@@ -196,8 +196,9 @@ class Client {
 var rooms = [];
 class Room {
   constructor(room_name) {
-    this.name = room_name
+    this.name = room_name;
     this.users = [];
+    this.playlist = [];
   }
 }
 
@@ -219,7 +220,9 @@ function remove_from_current_room(client) {
   let current_room = get_room(clients.get(client).current_room);
   if(current_room != null){
     let index = current_room.users.indexOf(client);
-    if (index !== -1) current_room.users.splice(client, 1);
+    if (index !== -1) {
+      current_room.users.splice(client, 1);
+    }
   }
 }
 
@@ -262,11 +265,15 @@ io.on('connection', function(socket){
       get_room(room_name).users.push(client);
       clients.get(client).current_room = room_name;
       //console.log(clients.get(client));
+
+      console.log(rooms);
     }
   });
 
-  socket.on('playlist_add', (uri) => {
+  socket.on('playlist_add', (client, uri) => {
+    get_room(clients.get(client).current_room).playlist.push(uri);
     console.log('playlist_add ' + uri);
+    console.log(get_room(clients.get(client).current_room))
     io.sockets.emit('playlist_add', uri);
   });
 
