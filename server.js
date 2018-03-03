@@ -243,13 +243,20 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on('try_to_join_room', (socket, room_name) => {
+  socket.on('try_to_join_room', (client, room_name) => {
     if(room_exists(room_name)){
-      //room.users.push(user);
-      get_room(room_name).users.push(socket);
-      clients.get(socket).current_room = room_name;
+      // remove user from users list of their current room, if they are in one
+      let current_room = get_room(clients.get(client).current_room);
+      if(current_room != null){
+        let index = current_room.users.indexOf(client);
+        if (index !== -1) current_room.users.splice(client, 1);
+      }
+      
+      // then add user to new room's user list
+      get_room(room_name).users.push(client);
+      clients.get(client).current_room = room_name;
       console.log(rooms);
-      console.log(clients.get(socket));
+      //console.log(clients.get(client));
     }
   });
 
