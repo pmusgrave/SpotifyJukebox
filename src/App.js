@@ -141,8 +141,10 @@ class App extends Component {
   }
 
   add_to_playlist = (value) => {
-    //console.log('value is ' + value);
-    this.setState({playlist: this.state.playlist.concat([value])});
+    if (value != null){
+      //console.log('value is ' + value);
+      this.setState({playlist: this.state.playlist.concat([value])});
+    }
   }
 
   playlist_next_track = () => {
