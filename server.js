@@ -308,6 +308,6 @@ function room_auth(join) {
 /******************************************************
                   HTTP SERVER
 ******************************************************/
-http.listen(8888, function(){
-  console.log('listening on port 8888');
+http.listen(80, function(){
+  console.log('listening on port 80');
 });
