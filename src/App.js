@@ -35,7 +35,7 @@ class App extends Component {
         scheduler_interval: 5000,
         timer: null
       };
-      this.socket = require('socket.io-client')('http://psmusgrave.com:80/callback');
+      this.socket = require('socket.io-client')('http://psmusgrave.com:80');
       this.socket.on('playlist_add', (uri) => {
         console.log('playlist_add ' + uri);
         this.add_to_playlist(uri);
@@ -141,8 +141,8 @@ class App extends Component {
   }
 
   add_to_playlist = (value) => {
+    console.log('value is ' + value);
     if (value != null){
-      //console.log('value is ' + value);
       this.setState({playlist: this.state.playlist.concat([value])});
     }
   }

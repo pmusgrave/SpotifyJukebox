@@ -5,17 +5,18 @@ class SearchResult extends Component {
   constructor(props){
     super(props);
     this.state = {
-      current_selection: ''
+      // current_selection: ''
     }
   };
 
   queue_item(item) {
     //event.preventDefault();
     console.log('queueueueueuing');
+    console.log(this.props.socket);
     // this.props.add_to_playlist(item);
     this.props.socket.emit('playlist_add', item);
     //this.props.add_broadcast(item);
-    this.setState({current_selection: ''});
+    // this.setState({current_selection: ''});
   }
 
   render() {

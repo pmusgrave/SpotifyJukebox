@@ -13,6 +13,7 @@ class Parties extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.props.socket.on('updated_room_list', (rooms) => {
+      console.log("update room list from server");
       this.setState({rooms: rooms});
     });
   }
