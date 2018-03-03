@@ -261,11 +261,15 @@ io.on('connection', function(socket){
     if(room_exists(room_name)){
       remove_from_current_room(client);
 
+      let room = get_room(room_name);
+
       // then add user to new room's user list
-      get_room(room_name).users.push(client);
+      room.users.push(client);
       clients.get(client).current_room = room_name;
       //console.log(clients.get(client));
 
+      // and update the client's playlist with the existing party playlist
+      io.sockets.emit('playlist_add', room, room.playlist);
       console.log(rooms);
     }
   });
@@ -276,7 +280,7 @@ io.on('connection', function(socket){
       room.playlist.push(uri);
       console.log('playlist_add ' + uri);
       console.log(room)
-      
+
       // for now, sending entire playlist, but this should change to
       // only sending updates or periodically checking if client is synced
       // with server
