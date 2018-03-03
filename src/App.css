@@ -9,6 +9,10 @@
   color: white;
 }
 
+.App-logo {
+  border-radius: 50%
+}
+
 .App-title {
   font-size: 1.5em;
 }
