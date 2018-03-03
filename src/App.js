@@ -15,8 +15,8 @@ var query_string = require('query-string');
 
 var parsed_hash = query_string.parse(window.location.hash);
 var auth_keys = {
-  //redirect_uri: 'http://psmusgrave.com:80/callback', // Your redirect uri
-  redirect_uri: 'http://localhost:8888/callback', // Your redirect uri
+  redirect_uri: 'http://psmusgrave.com:80/callback', // Your redirect uri
+  // redirect_uri: 'http://localhost:8888/callback', // Your redirect uri
   stateKey: 'spotify_auth_state',
   access_token: parsed_hash['access_token'],
   refresh_token: parsed_hash['refresh_token']
@@ -36,8 +36,8 @@ class App extends Component {
         scheduler_interval: 5000,
         timer: null
       };
-      // this.socket = require('socket.io-client')('http://psmusgrave.com:80');
-      this.socket = require('socket.io-client')('http://localhost:8888');
+      this.socket = require('socket.io-client')('http://psmusgrave.com:80');
+      // this.socket = require('socket.io-client')('http://localhost:8888');
       this.socket.on('playlist_add', (room, playlist) => {
         console.log('playlist_add ' + playlist);
         //this.add_to_playlist(uri);
