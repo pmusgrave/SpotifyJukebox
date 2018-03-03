@@ -136,7 +136,8 @@ class App extends Component {
 
 
       if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
-        this.play_next_track(this.state.playlist[0]);
+        // this.play_next_track(this.state.playlist[0]);
+        this.socket.emit("next_track", this.socket.id, this.state.playlist[0]);
         //clearInterval(this.state.scheduler);
       }
 
@@ -281,26 +282,32 @@ class App extends Component {
               <img src={logo} className="App-logo" alt="logo" />
               <h1 className="App-title">Spotify Jukebox</h1>
             </header>
-            <Parties socket={this.socket}/>
-            <Search
-              playlist={this.state.playlist}
-              add_to_playlist={this.add_to_playlist}
-              socket={this.socket}
-              auth_keys={auth_keys}
-            />
-            <hr/>
-            <TransportControls
-              playlist={this.state.playlist}
-              playlist_next_track={this.playlist_next_track.bind(this)}
-              player={this.state.player}
-              begin_playback={this.begin_playback.bind(this)}
-              pause_playback={this.pause_playback.bind(this)}
-              play_next_track={this.play_next_track.bind(this)}
-              toggle_playback_state={this.toggle_playback_state.bind(this)}
-              socket={this.socket}
-              auth_keys={auth_keys}
-            />
-            <Playlist current_track={this.state.player.item} playlist={this.state.playlist}/>
+            <div id="top">
+              <Parties socket={this.socket}/>
+              <Search
+                playlist={this.state.playlist}
+                add_to_playlist={this.add_to_playlist}
+                socket={this.socket}
+                auth_keys={auth_keys}
+              />
+            </div>
+
+            <div id="bottom">
+              <br/>
+              <TransportControls
+                playlist={this.state.playlist}
+                playlist_next_track={this.playlist_next_track.bind(this)}
+                player={this.state.player}
+                begin_playback={this.begin_playback.bind(this)}
+                pause_playback={this.pause_playback.bind(this)}
+                play_next_track={this.play_next_track.bind(this)}
+                toggle_playback_state={this.toggle_playback_state.bind(this)}
+                socket={this.socket}
+                auth_keys={auth_keys}
+              />
+              <Playlist current_track={this.state.player.item} playlist={this.state.playlist}/>
+            </div>
+
           </div>
       );
     }
