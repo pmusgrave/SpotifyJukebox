@@ -32,7 +32,7 @@ var cookieParser = require('cookie-parser');
 ///////////////////////////////////////////////////////////////////////////////
 var client_id = '68d49ecf355c49078720c714d2655b87'; // Your client id
 var client_secret = 'da860300f95842e4a0a911d67528829b'; // Your secret
-var redirect_uri = 'http://psmusgrave.com:80/callback'; // Your redirect uri
+var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 ///////////////////////////////////////////////////////////////////////////////
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,6 +184,13 @@ app.get('/refresh_token', nocache, function(req, res) {
                    SOCKET.IO
 ******************************************************/
 var clients = new Map();
+class Client {
+    constructor(socket) {
+      this.socket = socket,
+      this.current_room = ""
+    }
+}
+
 // Would prefer to use a map for rooms, but socket.io does not allow
 // transmitting map types. Using array of objects instead.
 var rooms = [];
@@ -214,7 +221,7 @@ io.on('connection', function(socket){
   // everything in the auth_success callback
 
   console.log('a user connected. id: ' + socket.id);
-  clients.set(socket.id, socket);
+  clients.set(socket.id, new Client(socket));
   socket.emit('updated_room_list', rooms);
 
   socket.on("disconnect", function() {
@@ -223,8 +230,8 @@ io.on('connection', function(socket){
 
   socket.on('new_room', (room) => {
     if(!room_exists(room)){
-      console.log("room created: " + room);
       if (room != null) {
+        console.log("room created: " + room);
         rooms.push(new Room(room));
       }
       // console.log(rooms);
@@ -265,6 +272,6 @@ function room_auth(join) {
 /******************************************************
                   HTTP SERVER
 ******************************************************/
-http.listen(80, function(){
-  console.log('listening on port 80');
+http.listen(8888, function(){
+  console.log('listening on port 8888');
 });
