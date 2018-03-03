@@ -271,10 +271,20 @@ io.on('connection', function(socket){
   });
 
   socket.on('playlist_add', (client, uri) => {
-    get_room(clients.get(client).current_room).playlist.push(uri);
-    console.log('playlist_add ' + uri);
-    console.log(get_room(clients.get(client).current_room))
-    io.sockets.emit('playlist_add', uri);
+    let room = get_room(clients.get(client).current_room);
+    if(room != null){
+      room.playlist.push(uri);
+      console.log('playlist_add ' + uri);
+      console.log(room)
+      
+      // for now, sending entire playlist, but this should change to
+      // only sending updates or periodically checking if client is synced
+      // with server
+      io.sockets.emit('playlist_add', room, room.playlist);
+    }
+    else {
+      console.log("not in a room. get a room.");
+    }
   });
 
   socket.on("next_track", (track_id) => {

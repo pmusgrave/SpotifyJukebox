@@ -38,9 +38,10 @@ class App extends Component {
       };
       // this.socket = require('socket.io-client')('http://psmusgrave.com:80');
       this.socket = require('socket.io-client')('http://localhost:8888');
-      this.socket.on('playlist_add', (uri) => {
-        console.log('playlist_add ' + uri);
-        this.add_to_playlist(uri);
+      this.socket.on('playlist_add', (room, playlist) => {
+        console.log('playlist_add ' + playlist);
+        //this.add_to_playlist(uri);
+        this.setState({playlist:playlist});
       });
 
       this.authentication_scheduler();
