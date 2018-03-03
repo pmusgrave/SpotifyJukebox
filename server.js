@@ -214,6 +214,15 @@ function room_exists(room_name) {
   return(get_room(room_name) != undefined);
 }
 
+function remove_from_current_room(client) {
+  // remove user from users list of their current room, if they are in one
+  let current_room = get_room(clients.get(client).current_room);
+  if(current_room != null){
+    let index = current_room.users.indexOf(client);
+    if (index !== -1) current_room.users.splice(client, 1);
+  }
+}
+
 io.on('connection', function(socket){
   // connections should only happen after user authenticates with Spotify
   // OR, I might have to create a socket client object initially,
@@ -225,6 +234,8 @@ io.on('connection', function(socket){
   socket.emit('updated_room_list', rooms);
 
   socket.on("disconnect", function() {
+    console.log("user " + socket.id + " disconnected.");
+    remove_from_current_room(socket.id);
     clients.delete(socket.id);
   })
 
@@ -245,17 +256,11 @@ io.on('connection', function(socket){
 
   socket.on('try_to_join_room', (client, room_name) => {
     if(room_exists(room_name)){
-      // remove user from users list of their current room, if they are in one
-      let current_room = get_room(clients.get(client).current_room);
-      if(current_room != null){
-        let index = current_room.users.indexOf(client);
-        if (index !== -1) current_room.users.splice(client, 1);
-      }
-      
+      remove_from_current_room(client);
+
       // then add user to new room's user list
       get_room(room_name).users.push(client);
       clients.get(client).current_room = room_name;
-      console.log(rooms);
       //console.log(clients.get(client));
     }
   });
