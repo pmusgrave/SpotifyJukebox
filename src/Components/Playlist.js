@@ -10,6 +10,9 @@ class Playlist extends Component {
     // showing the entire playlist is for debugging purposes
     // in true jukebox fasion, only the current track should be visible
     // console.log(this.props.current_track);
+
+    // current_track.artists is an array (always?), but just displaying the
+    // first element
     if(this.props.current_track != null){
       return (
         <div>

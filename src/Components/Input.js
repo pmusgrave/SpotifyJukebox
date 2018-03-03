@@ -13,6 +13,7 @@ class Input extends Component {
     }
 
     handleChange(event) {
+      console.log("stuff happening");
         this.setState({value: event.target.value});
     }
 

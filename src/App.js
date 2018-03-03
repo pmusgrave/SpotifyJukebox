@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
-import logo from './logo.png';
+import logo from './logo.jpg';
 import './App.css';
 import Playlist from './Components/Playlist.js';
 import Parties from './Components/Parties.js';
