@@ -247,7 +247,9 @@ io.on('connection', function(socket){
     if(room_exists(room_name)){
       //room.users.push(user);
       get_room(room_name).users.push(socket);
+      clients.get(socket).current_room = room_name;
       console.log(rooms);
+      console.log(clients.get(socket));
     }
   });
 
