@@ -120,11 +120,17 @@ class App extends Component {
       );
 
       if(body.item.duration_ms != null && body.item.duration_ms != undefined) {
-        this.setState({scheduler_interval: (body.item.duration_ms - body.progress_ms + 1000)});
+        if(body.is_playing){
+          this.setState({scheduler_interval: (body.item.duration_ms - body.progress_ms + 1000)});
+        }
+        else {
+          this.setState({scheduler_interval: (5000)});
+        }
       }
       else {
         this.setState({scheduler_interval: (5000)});
       }
+
 
       if(!this.state.player.paused_by_user && !this.state.player.is_playing) {
         this.play_next_track(this.state.playlist[0]);
@@ -181,7 +187,7 @@ class App extends Component {
           body: ''
         };
         request.put(options, function(error, response, body) {
-
+          this.playlist_scheduler();
           console.log('Playing...');
         });
     });
