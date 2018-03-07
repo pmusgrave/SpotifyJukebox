@@ -199,7 +199,8 @@ var rooms = [];
 class Room {
   constructor(room_name) {
     this.name = room_name;
-    this.users = [];
+    this.user_socket_ids = [];
+    this.user_handles = [];
     this.playlist = [];
   }
 }
@@ -219,11 +220,16 @@ function room_exists(room_name) {
 
 function remove_from_current_room(client) {
   // remove user from users list of their current room, if they are in one
-  let current_room = get_room(clients.get(client).current_room);
+  let current_room = get_room(client.current_room);
   if(current_room != null){
-    let index = current_room.users.indexOf(client);
+    let index = current_room.user_socket_ids.indexOf(client.socket.id);
     if (index !== -1) {
-      current_room.users.splice(index, 1);
+      current_room.user_socket_ids.splice(index, 1);
+    }
+
+    index = current_room.user_handles.indexOf(client.handle);
+    if (index !== -1) {
+      current_room.user_handles.splice(index, 1);
     }
   }
 }
@@ -240,7 +246,7 @@ io.on('connection', function(socket){
 
   socket.on("disconnect", function() {
     console.log("user " + socket.id + " disconnected.");
-    remove_from_current_room(socket.id);
+    remove_from_current_room(clients.get(socket.id));
     clients.delete(socket.id);
   })
 
@@ -261,17 +267,18 @@ io.on('connection', function(socket){
 
   socket.on('try_to_join_room', (client, handle, room_name) => {
     if(room_exists(room_name)){
-      remove_from_current_room(client);
+      remove_from_current_room(clients.get(client));
 
       let room = get_room(room_name);
 
       // then add user to new room's user list
-      room.users.push(client);
+      room.user_socket_ids.push(client);
+      room.user_handles.push(handle);
       clients.get(client).current_room = room_name;
       clients.get(client).handle = handle;
       //console.log(clients.get(client));
 
-      io.sockets.emit('you_are_in', client, handle, room_name);
+      io.sockets.emit('you_are_in', client, room.user_handles, room_name);
 
       // and update the client's playlist with the existing party playlist
       io.sockets.emit('playlist_add', room, room.playlist);
@@ -282,11 +289,6 @@ io.on('connection', function(socket){
   socket.on('delete_room', (client, room_name) => {
     if(room_exists(room_name)){
       console.log('deleting... ' + room_name);
-      let room = get_room(room_name);
-      for (let i = 0; i < room.users.length; i++){
-        console.log('removing' + room.users[i]);
-        remove_from_current_room(room.users[i]);
-      }
 
       rooms.splice(rooms.indexOf(room),1);
       socket.emit('updated_room_list', rooms);
