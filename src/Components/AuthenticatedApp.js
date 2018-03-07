@@ -13,6 +13,7 @@ class AuthenticatedApp extends Component {
       super(props);
       this.state = {
         room_name: null,
+        handle: null,
         playlist: [],
         player: {
           is_playing: false,
@@ -25,9 +26,14 @@ class AuthenticatedApp extends Component {
       // this.socket = require('socket.io-client')('http://psmusgrave.com:80');
       this.socket = require('socket.io-client')('http://localhost:8888');
 
-      this.socket.on('you_are_in', (client, room_name) => {
+      this.socket.on('you_are_in', (client, handle, room_name) => {
         if (client === this.socket.id) {
-          this.setState({room_name:room_name});
+          this.setState(
+            {
+              room_name:room_name,
+              handle:handle,
+            }
+          );
         }
       });
 
@@ -259,7 +265,7 @@ class AuthenticatedApp extends Component {
           </header>
           <div>
             <h3>Current Room: {this.state.room_name}</h3>
-
+            <h4>{this.state.handle}</h4>
             <button type="button" onClick={this.handle_room_click.bind(this)}>Change Rooms</button>
             <Search
               playlist={this.state.playlist}

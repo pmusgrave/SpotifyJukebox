@@ -33,8 +33,9 @@ class Parties extends Component {
   }
 
   join_room(room) {
+    let handle = prompt("What should we call you?");
     console.log("let me in " + room);
-    this.props.socket.emit('try_to_join_room', this.props.socket.id,room);
+    this.props.socket.emit('try_to_join_room', this.props.socket.id, handle, room);
   }
 
   delete_room(room) {
@@ -42,7 +43,6 @@ class Parties extends Component {
     // to do: change room creation so that creating a room adds you to that room
     // then delete the room when everyone in it leaves
     // also need to add passwords, room options, etc
-    console.log('should be deleting...')
     this.props.socket.emit('delete_room', this.props.socket.id,room);
   }
 
