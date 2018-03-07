@@ -22,8 +22,8 @@ class AuthenticatedApp extends Component {
         scheduler_interval: 5000,
         timer: null
       };
-      this.socket = require('socket.io-client')('http://psmusgrave.com:80');
-      // this.socket = require('socket.io-client')('http://localhost:8888');
+      // this.socket = require('socket.io-client')('http://psmusgrave.com:80');
+      this.socket = require('socket.io-client')('http://localhost:8888');
 
       this.socket.on('you_are_in', (client, room_name) => {
         if (client === this.socket.id) {
@@ -258,6 +258,8 @@ class AuthenticatedApp extends Component {
             <h1 className="App-title">Spotify Jukebox</h1>
           </header>
           <div>
+            <h3>Current Room: {this.state.room_name}</h3>
+
             <button type="button" onClick={this.handle_room_click.bind(this)}>Change Rooms</button>
             <Search
               playlist={this.state.playlist}

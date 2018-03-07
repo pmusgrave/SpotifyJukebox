@@ -32,8 +32,8 @@ var cookieParser = require('cookie-parser');
 ///////////////////////////////////////////////////////////////////////////////
 var client_id = '68d49ecf355c49078720c714d2655b87'; // Your client id
 var client_secret = 'da860300f95842e4a0a911d67528829b'; // Your secret
-var redirect_uri = 'http://psmusgrave.com:80/callback'; // Your redirect uri
-// var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+// var redirect_uri = 'http://psmusgrave.com:80/callback'; // Your redirect uri
+var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 ///////////////////////////////////////////////////////////////////////////////
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ///////////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ function remove_from_current_room(client) {
   if(current_room != null){
     let index = current_room.users.indexOf(client);
     if (index !== -1) {
-      current_room.users.splice(client, 1);
+      current_room.users.splice(index, 1);
     }
   }
 }
@@ -277,6 +277,20 @@ io.on('connection', function(socket){
     }
   });
 
+  socket.on('delete_room', (client, room_name) => {
+    console.log('deleting...')
+    if(room_exists(room_name)){
+      let room = get_room(room_name);
+      for (let i = 0; i < room.users.length; i++){
+        console.log('removing' + room.users[i]);
+        remove_from_current_room(room.users[i]);
+      }
+
+      rooms.splice(rooms.indexOf(room),1);
+      socket.emit('updated_room_list', rooms);
+    }
+  });
+
   socket.on('playlist_add', (client, uri) => {
     let room = get_room(clients.get(client).current_room);
     if(room != null){
@@ -319,6 +333,6 @@ function room_auth(join) {
 /******************************************************
                   HTTP SERVER
 ******************************************************/
-http.listen(80, function(){
-  console.log('listening on port 80');
+http.listen(8888, function(){
+  console.log('listening on port 8888');
 });
