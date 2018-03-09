@@ -14,6 +14,7 @@ class AuthenticatedApp extends Component {
       this.state = {
         room_name: null,
         handle: null,
+        user_list: [],
         playlist: [],
         player: {
           is_playing: false,
@@ -26,16 +27,22 @@ class AuthenticatedApp extends Component {
       // this.socket = require('socket.io-client')('http://psmusgrave.com:80');
       this.socket = require('socket.io-client')('http://localhost:8888');
 
-      this.socket.on('you_are_in', (client, handle, room_name) => {
-        if (client === this.socket.id) {
-          this.setState(
-            {
-              room_name:room_name,
-              handle:handle,
-            }
-          );
-        }
+      this.socket.on('you_are_in', (handle, user_list, room_name) => {
+        this.setState(
+          {
+            handle: handle,
+            user_list: user_list,
+            room_name: room_name,
+          }
+        );
       });
+
+      this.socket.on('updated_user_list', (user_list) => {
+        console.log(user_list);
+        this.setState({
+          user_list:user_list
+        })
+      })
 
       this.socket.on('playlist_add', (room, playlist) => {
         console.log('playlist_add ' + playlist);
@@ -239,6 +246,7 @@ class AuthenticatedApp extends Component {
 
   handle_room_click() {
     this.setState({room_name:null});
+    this.socket.emit('remove_me_from_room', this.socket.id);
     this.socket.emit('new_room', null); // emitting null room will refresh the room list
   }
 
@@ -266,7 +274,16 @@ class AuthenticatedApp extends Component {
           <div>
             <h3>Current Room: {this.state.room_name}</h3>
             <h4>{this.state.handle}</h4>
+            <h4>Who's here: </h4>
+            <div>
+              {this.state.user_list.map((list_item) => {
+                return <div>
+                  <label>{list_item}</label>
+                </div>
+              })}
+            </div>
             <button type="button" onClick={this.handle_room_click.bind(this)}>Change Rooms</button>
+            <hr/>
             <Search
               playlist={this.state.playlist}
               add_to_playlist={this.add_to_playlist}

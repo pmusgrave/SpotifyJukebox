@@ -32,8 +32,8 @@ var cookieParser = require('cookie-parser');
 ///////////////////////////////////////////////////////////////////////////////
 var client_id = '68d49ecf355c49078720c714d2655b87'; // Your client id
 var client_secret = 'da860300f95842e4a0a911d67528829b'; // Your secret
-// var redirect_uri = 'http://psmusgrave.com:80/callback'; // Your redirect uri
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+var redirect_uri = 'http://psmusgrave.com:80/callback'; // Your redirect uri
+// var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 ///////////////////////////////////////////////////////////////////////////////
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ///////////////////////////////////////////////////////////////////////////////
@@ -271,20 +271,28 @@ io.on('connection', function(socket){
 
       let room = get_room(room_name);
 
-      // then add user to new room's user list
+      // add user to new room's user list
       room.user_socket_ids.push(client);
       room.user_handles.push(handle);
+
       clients.get(client).current_room = room_name;
       clients.get(client).handle = handle;
-      //console.log(clients.get(client));
 
-      io.sockets.emit('you_are_in', client, room.user_handles, room_name);
+      io.sockets.emit('you_are_in', handle, room.user_handles, room_name);
 
       // and update the client's playlist with the existing party playlist
       io.sockets.emit('playlist_add', room, room.playlist);
       console.log(rooms);
     }
   });
+
+  socket.on('remove_me_from_room', (client) => {
+    console.log('removing ' + client);
+    let room = get_room(clients.get(client).current_room);
+    remove_from_current_room(clients.get(client));
+    console.log(room);
+    socket.emit('updated_user_list', room.user_handles);
+  })
 
   socket.on('delete_room', (client, room_name) => {
     if(room_exists(room_name)){
@@ -334,6 +342,6 @@ function room_auth(join) {
 /******************************************************
                   HTTP SERVER
 ******************************************************/
-http.listen(8888, function(){
-  console.log('listening on port 8888');
+http.listen(80, function(){
+  console.log('listening on port 80');
 });
