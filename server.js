@@ -297,8 +297,8 @@ io.on('connection', function(socket){
   socket.on('delete_room', (client, room_name) => {
     if(room_exists(room_name)){
       console.log('deleting... ' + room_name);
-
-      rooms.splice(rooms.indexOf(room),1);
+      rooms.splice(rooms.indexOf(get_room(room_name)),1);
+      console.log(rooms)
       socket.emit('updated_room_list', rooms);
     }
   });
