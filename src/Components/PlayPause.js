@@ -42,9 +42,16 @@ class PlayPause extends Component {
 
 
   render() {
-    return (
-      <button id="PlayPauseButton" type="button" onClick={this.handle_click}></button>
-    );
+    if (this.props.player.is_playing){
+      return (
+        <button id="PauseButton" type="button" onClick={this.handle_click}></button>
+      );
+    }
+    else{
+      return (
+        <button id="PlayButton" type="button" onClick={this.handle_click}></button>
+      );
+    }
   }
 }
 

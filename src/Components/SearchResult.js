@@ -20,12 +20,12 @@ class SearchResult extends Component {
   render() {
     var styles = {
       overflow:"auto",
-      height:"30vh"
+      height:"20vh"
     }
 
     if (this.props.results != undefined && this.props.results.hasOwnProperty('items')) {
       return(
-        <div >
+        <div>
           <h2>{this.props.title}</h2>
           <div style={styles}>
             {this.props.results.items.map((list_item) => {

@@ -1,7 +1,7 @@
 * {
   font-family: 'Montserrat', sans-serif;
   color: #c9e3ac;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 button {
@@ -22,7 +22,9 @@ input {
 .SubmitButton {
   background-color: #19231a;
   color: #eaefbd;
-  margin: 15px;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 15px;
 }
 
 .App {
@@ -48,17 +50,29 @@ input {
   text-align: center;
 }
 
-#PlayPauseButton, #NextButton {
+#PlayButton, #PauseButton, #NextButton {
   position: fixed;
   bottom: 180px;
   text-align: center;
 }
 
-#PlayPauseButton {
+#PlayButton {
   left:45vw;
   width:50px;
   height:50px;
   background: url("noun_243845_cc.png");
+  background-color: #90BE6D;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  border-radius: 50%;
+}
+
+#PauseButton {
+  left:45vw;
+  width:50px;
+  height:50px;
+  background: url("noun_176432_cc.png");
   background-color: #90BE6D;
   background-position: center;
   background-repeat: no-repeat;

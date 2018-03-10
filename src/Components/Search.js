@@ -86,7 +86,7 @@ class Search extends Component {
             socket={this.props.socket}
           />
         : null}
-
+        <hr/>
       </div>
     );
   }
