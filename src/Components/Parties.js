@@ -55,7 +55,7 @@ class Parties extends Component {
             Add a new party:
             <input type="text" value={this.state.room_name} onChange={this.handleChange} />
           </label>
-          <input type="submit" value="Submit" />
+          <input className="SubmitButton" type="submit" value="Submit" />
         </form>
 
         <table>
@@ -79,7 +79,7 @@ class Parties extends Component {
               Add a new party:
               <input type="text" value={this.state.room_name} onChange={this.handleChange} />
             </label>
-            <input type="submit" value="Submit" />
+            <input className="SubmitButton" type="submit" value="Submit" />
           </form>
         </div>
       )

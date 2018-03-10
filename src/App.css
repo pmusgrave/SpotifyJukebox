@@ -1,5 +1,28 @@
-d * {
+* {
   font-family: 'Montserrat', sans-serif;
+  color: #c9e3ac;
+  margin-bottom: 2px;
+}
+
+button {
+  border-radius: 20px;
+  border-color: black;
+  background-color: #90BE6D;
+  color: black;
+}
+
+input {
+  border-radius: 20px;
+  border-color: black;
+  background-color: #eaefbd;
+  color: black;
+  padding: 5px;
+}
+
+.SubmitButton {
+  background-color: #19231a;
+  color: #eaefbd;
+  margin: 15px;
 }
 
 .App {
@@ -8,9 +31,12 @@ d * {
 
 .App-header {
   background-color: #19231A;
-  height: 150px;
+  height: 170px;
   padding: 20px;
+  padding-bottom: 80px;
   color: white;
+  border-color: black;
+  border-style: solid;
 }
 
 .footer {
@@ -33,7 +59,7 @@ d * {
   width:50px;
   height:50px;
   background: url("noun_243845_cc.png");
-  background-color: Transparent;
+  background-color: #90BE6D;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100%;
@@ -45,7 +71,7 @@ d * {
   width:50px;
   height:50px;
   background: url("noun_256167_cc_smaller.png");
-  background-color: Transparent;
+  background-color: #90BE6D;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 70%;

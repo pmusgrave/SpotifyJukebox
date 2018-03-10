@@ -74,7 +74,7 @@ class Search extends Component {
             Search:
             <input type="text" value={this.state.query} onChange={this.handleChange} />
           </label>
-          <input type="submit" value="Submit" />
+          <input className="SubmitButton" type="submit" value="Submit" />
         </form>
 
         {this.state.show_results ?
