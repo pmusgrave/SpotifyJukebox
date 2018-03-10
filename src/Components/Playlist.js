@@ -15,20 +15,19 @@ class Playlist extends Component {
     // first element
     if(this.props.current_track != null){
       return (
-        <div>
+        <div className="footer">
           <h1>Current Track</h1>
           <h3>{this.props.current_track.name}</h3>
           <h4>{this.props.current_track.artists[0].name}</h4>
           <h5>{this.props.current_track.album.name}</h5>
-          <h1>Playlist</h1>
-          <ul>{this.props.playlist.map(function(list_item) {
-            return <li>{list_item}</li>;
-          })}</ul>
         </div>
       );
     }
     else{
-      return(<h1>Current Track</h1>)
+      return(<div className="footer">
+        <h1>Current Track</h1>
+      </div>
+        )
     }
   }
 }

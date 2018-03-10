@@ -20,7 +20,7 @@ class SearchResult extends Component {
   render() {
     var styles = {
       overflow:"auto",
-      height:"40vh"
+      height:"30vh"
     }
 
     if (this.props.results != undefined && this.props.results.hasOwnProperty('items')) {

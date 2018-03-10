@@ -58,13 +58,16 @@ class Parties extends Component {
           <input type="submit" value="Submit" />
         </form>
 
-        <ul>{this.state.rooms.map((list_item) => {
-          return <div>
-            <li>{list_item.name}</li>
-            <button onClick={this.join_room.bind(this,list_item.name)}>Join</button>
-            <button onClick={this.delete_room.bind(this,list_item.name)}>Delete</button>
-          </div>
-        })}</ul>
+        <table>
+          <tr>{this.state.rooms.map((list_item) => {
+            return <div>
+              <td className="RoomTitle">{list_item.name}</td>
+              <td><button onClick={this.join_room.bind(this,list_item.name)}>Join</button></td>
+              <td><button onClick={this.delete_room.bind(this,list_item.name)}>Delete</button></td>
+            </div>
+          })}</tr>
+        </table>
+
       </div>
       )
     }

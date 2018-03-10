@@ -1,3 +1,7 @@
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -7,6 +11,15 @@
   height: 150px;
   padding: 20px;
   color: white;
+}
+
+.footer {
+    position: fixed;
+    height: 165px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
 }
 
 .App-logo {
@@ -19,6 +32,19 @@
 
 .App-intro {
   font-size: large;
+}
+
+.RoomTitle {
+  width: 100px;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td,th{
+  padding:0.5rem;
+  text-align: left;
 }
 
 @keyframes App-logo-spin {
