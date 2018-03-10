@@ -1,4 +1,4 @@
-* {
+d * {
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -14,12 +14,42 @@
 }
 
 .footer {
-    position: fixed;
-    height: 165px;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
+  position: fixed;
+  height: 165px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+#PlayPauseButton, #NextButton {
+  position: fixed;
+  bottom: 180px;
+  text-align: center;
+}
+
+#PlayPauseButton {
+  left:45vw;
+  width:50px;
+  height:50px;
+  background: url("noun_243845_cc.png");
+  background-color: Transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  border-radius: 50%;
+}
+
+#NextButton {
+  left:52vw;
+  width:50px;
+  height:50px;
+  background: url("noun_256167_cc_smaller.png");
+  background-color: Transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 70%;
+  border-radius: 50%;
 }
 
 .App-logo {

@@ -27,7 +27,7 @@ class Playlist extends Component {
       return(<div className="footer">
         <h1>Current Track</h1>
       </div>
-        )
+      )
     }
   }
 }

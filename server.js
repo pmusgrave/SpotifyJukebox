@@ -32,8 +32,8 @@ var cookieParser = require('cookie-parser');
 ///////////////////////////////////////////////////////////////////////////////
 var client_id = '68d49ecf355c49078720c714d2655b87'; // Your client id
 var client_secret = 'da860300f95842e4a0a911d67528829b'; // Your secret
-// var redirect_uri = 'http://psmusgrave.com:80/callback'; // Your redirect uri
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+var redirect_uri = 'http://psmusgrave.com:80/callback'; // Your redirect uri
+// var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 ///////////////////////////////////////////////////////////////////////////////
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ///////////////////////////////////////////////////////////////////////////////
@@ -342,6 +342,6 @@ function room_auth(join) {
 /******************************************************
                   HTTP SERVER
 ******************************************************/
-http.listen(8888, function(){
-  console.log('listening on port 8888');
+http.listen(80, function(){
+  console.log('listening on port 80');
 });

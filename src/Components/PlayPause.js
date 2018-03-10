@@ -43,7 +43,7 @@ class PlayPause extends Component {
 
   render() {
     return (
-      <button type="button" onClick={this.handle_click}>PlayPause</button>
+      <button id="PlayPauseButton" type="button" onClick={this.handle_click}></button>
     );
   }
 }

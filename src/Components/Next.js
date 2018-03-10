@@ -19,7 +19,7 @@ class Next extends Component {
 
   render() {
     return (
-      <button type="button" onClick={this.handle_next_click.bind(this, this.props.track_id)}>Next</button>
+      <button id="NextButton" type="button" onClick={this.handle_next_click.bind(this, this.props.track_id)}></button>
     );
   }
 }
