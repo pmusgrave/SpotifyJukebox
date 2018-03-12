@@ -37,7 +37,7 @@ class Search extends Component {
           json: true,
         };
         request.get(options, (error, response, body) => {
-          console.log('Searching for ' + query + "...");
+          //console.log('Searching for ' + query + "...");
           //console.log(body)
           this.setState({
             results: {

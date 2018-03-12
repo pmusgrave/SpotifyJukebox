@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import logo from '../logo.jpg';
@@ -24,8 +25,8 @@ class AuthenticatedApp extends Component {
         scheduler_interval: 5000,
         timer: null
       };
-      this.socket = require('socket.io-client')('http://psmusgrave.com:80');
-      // this.socket = require('socket.io-client')('http://localhost:8888');
+      // this.socket = require('socket.io-client')('http://psmusgrave.com:80');
+      this.socket = require('socket.io-client')('http://localhost:8888');
 
       this.socket.on('you_are_in', (handle, user_list, room_name) => {
         this.setState(
