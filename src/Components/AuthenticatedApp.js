@@ -118,11 +118,13 @@ class AuthenticatedApp extends Component {
   }
 
   toggle_playback_state() {
-      this.setState({player: {
-          is_playing: !this.state.player.is_playing,
-          paused_by_user: !this.state.player.paused_by_user
-        }
-      });
+    let current_track = this.state.player.item;
+    this.setState({player: {
+        is_playing: !this.state.player.is_playing,
+        paused_by_user: !this.state.player.paused_by_user,
+        item: current_track
+      }
+    });
   }
 
   add_to_playlist = (value) => {
@@ -162,7 +164,7 @@ class AuthenticatedApp extends Component {
           device_id: device_id,
           body: ''
         };
-        request.put(options, function(error, response, body) {
+        request.put(options, (error, response, body) => {
           this.playlist_scheduler();
           console.log('Playing...');
         });
@@ -170,9 +172,11 @@ class AuthenticatedApp extends Component {
   }
 
   pause_playback() {
+    let current_track = this.state.player.item;
     this.setState({player:{
       is_playing: false,
-      paused_by_user: true
+      paused_by_user: true,
+      item: current_track
     }})
     let options = {
       url: 'https://api.spotify.com/v1/me/player/devices',
