@@ -33,9 +33,11 @@ class Parties extends Component {
   }
 
   join_room(room) {
-    let handle = prompt("What should we call you?");
+    let handle = prompt("Username",'');
     console.log("let me in " + room);
-    this.props.socket.emit('try_to_join_room', this.props.socket.id, handle, room);
+    if (handle != '' && handle != null) {
+      this.props.socket.emit('try_to_join_room', this.props.socket.id, handle, room);
+    }
   }
 
   delete_room(room) {
