@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import logo from '../logo.jpg';
+import Header from './Header.js';
 import Parties from './Parties.js';
 import Search from './Search.js';
 import TransportControls from './TransportControls.js';
@@ -222,13 +223,14 @@ class AuthenticatedApp extends Component {
       request.get(options, (error, response, body) => {
           // get active device before changing playback
           if(body.devices != undefined){
-            let num_devices = body.devices.length;
-            let device_id = null;
-            for (let i = 0; i < num_devices; i++) {
-                if (body.devices[i].is_active === true) {
-                    device_id = body.devices[i].id;
-                }
-            }
+            // let num_devices = body.devices.length;
+            // let device_id = null;
+            // for (let i = 0; i < num_devices; i++) {
+            //     if (body.devices[i].name === this.props.selected_device) {
+            //         device_id = body.devices[i].id;
+            //     }
+            // }
+            let device_id = this.props.device_id;
             let options = {
               url: 'https://api.spotify.com/v1/me/player/play',
               headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
@@ -255,10 +257,7 @@ class AuthenticatedApp extends Component {
     if(this.state.room_name === null){
       return (
         <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Spotify Jukebox</h1>
-          </header>
+          <Header/>
           <div>
             <Parties socket={this.socket}/>
           </div>
@@ -268,10 +267,7 @@ class AuthenticatedApp extends Component {
     else {
       return (
         <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Spotify Jukebox</h1>
-          </header>
+          <Header />
           <div>
             <h3>Current Room: {this.state.room_name}</h3>
             <h4>Who's here: </h4>

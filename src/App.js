@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import logo from './logo.jpg';
 import './App.css';
-import AuthenticatedApp from './Components/AuthenticatedApp.js';
+import Header from './Components/Header.js';
 import Login from './Components/Login.js';
+import DeviceSelector from './Components/DeviceSelector.js';
 
 const request = require('browser-request');
 
@@ -69,7 +70,7 @@ class App extends Component {
   render() {
     if(this.state.authenticated && this.state.product == 'premium') {
       return (
-          <AuthenticatedApp auth_keys={auth_keys} product={this.state.product}/>
+          <DeviceSelector auth_keys={auth_keys}/>
       );
     }
     else if(this.state.authenticated && this.state.product != 'premium') {
@@ -87,10 +88,7 @@ class App extends Component {
       this.set_authenticated_state(); //this is bad
       return (
         <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Spotify Jukebox</h1>
-          </header>
+          <Header />
           <Login />
         </div>
       );
