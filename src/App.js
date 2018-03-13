@@ -23,7 +23,8 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      authenticated: false
+      authenticated: false,
+      product: ''
     }
 
     this.authentication_scheduler();
@@ -54,7 +55,10 @@ class App extends Component {
 
     request.get(options, (error, response, body) => {
         if (!error && response.statusCode === 200) {
-          this.setState({authenticated: true});
+          this.setState({
+            authenticated: true,
+            product: body.product
+          });
         }
         else {
           this.setState({authenticated: false});
@@ -63,9 +67,20 @@ class App extends Component {
   }
 
   render() {
-    if(this.state.authenticated) {
+    if(this.state.authenticated && this.state.product == 'premium') {
       return (
-          <AuthenticatedApp auth_keys={auth_keys}/>
+          <AuthenticatedApp auth_keys={auth_keys} product={this.state.product}/>
+      );
+    }
+    else if(this.state.authenticated && this.state.product != 'premium') {
+      return (
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">Spotify Jukebox</h1>
+          </header>
+          <h4>Sorry! This app requires Spotify Premium.</h4>
+        </div>
       );
     }
     else {
