@@ -26,8 +26,8 @@ class AuthenticatedApp extends Component {
         scheduler_interval: 5000,
         timer: null
       };
-      this.socket = require('socket.io-client')('http://psmusgrave.com:80');
-      // this.socket = require('socket.io-client')('http://localhost:8888');
+      // this.socket = require('socket.io-client')('http://psmusgrave.com:80');
+      this.socket = require('socket.io-client')('http://localhost:8888');
 
       this.socket.on('you_are_in', (handle, user_list, room_name) => {
         this.setState(
@@ -142,33 +142,36 @@ class AuthenticatedApp extends Component {
   }
 
   begin_playback() {
-    let options = {
-      url: 'https://api.spotify.com/v1/me/player/devices',
-      headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
-      json: true
-    };
+    if(this.props.device != "no_device") {
+      let options = {
+        url: 'https://api.spotify.com/v1/me/player/devices',
+        headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+        json: true
+      };
 
-    // use the access token to access the Spotify Web API
-    request.get(options, (error, response, body) => {
-        // get active device before changing playback
-        let num_devices = body.devices.length;
-        let device_id = null;
-        for (let i = 0; i < num_devices; i++) {
-            if (body.devices[i].is_active === true) {
-                device_id = body.devices[i].id;
-            }
-        }
-        let options = {
-          url: 'https://api.spotify.com/v1/me/player/play',
-          headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
-          device_id: device_id,
-          body: ''
-        };
-        request.put(options, (error, response, body) => {
-          this.playlist_scheduler();
-          console.log('Playing...');
-        });
-    });
+      // use the access token to access the Spotify Web API
+      request.get(options, (error, response, body) => {
+          // get active device before changing playback
+          // let num_devices = body.devices.length;
+          // let device_id = null;
+          // for (let i = 0; i < num_devices; i++) {
+          //     if (body.devices[i].is_active === true) {
+          //         device_id = body.devices[i].id;
+          //     }
+          // }
+          let device_id = this.props.device_id;
+          let options = {
+            url: 'https://api.spotify.com/v1/me/player/play',
+            headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+            device_id: device_id,
+            body: ''
+          };
+          request.put(options, (error, response, body) => {
+            this.playlist_scheduler();
+            console.log('Playing...');
+          });
+      });
+    }
   }
 
   pause_playback() {
@@ -178,31 +181,35 @@ class AuthenticatedApp extends Component {
       paused_by_user: true,
       item: current_track
     }})
-    let options = {
-      url: 'https://api.spotify.com/v1/me/player/devices',
-      headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
-      json: true
-    };
 
-    // use the access token to access the Spotify Web API
-    request.get(options, (error, response, body) => {
-        // get active device before changing playback
-        let num_devices = body.devices.length;
-        let device_id = null;
-        for (let i = 0; i < num_devices; i++) {
-            if (body.devices[i].is_active === true) {
-                device_id = body.devices[i].id;
-            }
-        }
-        let options = {
-          url: 'https://api.spotify.com/v1/me/player/pause',
-          headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
-          device_id: device_id
-        };
-        request.put(options, function(error, response, body) {
-          console.log('Pausing...');
-        });
-    });
+    if(this.props.device != "no_device") {
+      let options = {
+        url: 'https://api.spotify.com/v1/me/player/devices',
+        headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+        json: true
+      };
+
+      // use the access token to access the Spotify Web API
+      request.get(options, (error, response, body) => {
+          // get active device before changing playback
+          // let num_devices = body.devices.length;
+          // let device_id = null;
+          // for (let i = 0; i < num_devices; i++) {
+          //     if (body.devices[i].is_active === true) {
+          //         device_id = body.devices[i].id;
+          //     }
+          // }
+          let device_id = this.props.device_id;
+          let options = {
+            url: 'https://api.spotify.com/v1/me/player/pause',
+            headers: { 'Authorization': 'Bearer ' + this.props.auth_keys.access_token },
+            device_id: device_id
+          };
+          request.put(options, function(error, response, body) {
+            console.log('Pausing...');
+          });
+      });
+    }
   }
 
   play_next_track(track_id) {
@@ -226,7 +233,7 @@ class AuthenticatedApp extends Component {
 
       request.get(options, (error, response, body) => {
           // get active device before changing playback
-          if(body.devices != undefined){
+          if(body.devices != undefined && this.props.device != "no_device"){
             // let num_devices = body.devices.length;
             // let device_id = null;
             // for (let i = 0; i < num_devices; i++) {
