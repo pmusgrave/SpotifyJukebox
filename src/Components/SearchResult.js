@@ -23,7 +23,7 @@ class SearchResult extends Component {
     var styles = {
       overflow:"auto",
       height:"45vh",
-      width: "60vw",
+      width: "50vw",
       float:"left",
     }
 

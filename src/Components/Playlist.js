@@ -13,19 +13,21 @@ class Playlist extends Component {
 
     // current_track.artists is an array (always?), but just displaying the
     // first element
-    if(this.props.current_track != null){
+    if(this.props.playlist.length != 0){
       return (
         <div id="playlist">
           <h1>Playlist</h1>
-          <h3>{this.props.current_track.name}</h3>
-          <h4>{this.props.current_track.artists[0].name}</h4>
-          <h5>{this.props.current_track.album.name}</h5>
+          {this.props.playlist.map((list_item) => {
+            return <div>
+              <label> {list_item}</label>
+            </div>
+          })}
         </div>
       );
     }
     else{
       return(<div id="playlist">
-        <h1>Playlist</h1>
+        <h1></h1>
       </div>
       )
     }

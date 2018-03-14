@@ -79,7 +79,7 @@ input {
 
 #PlayButton {
   float: left;
-  margin-left: 1vw;
+  margin-left: 2vw;
   width:50px;
   height:50px;
   background: url("noun_243845_cc.png");
@@ -92,7 +92,7 @@ input {
 
 #PauseButton {
   float: left;
-  margin-left: 1vw;
+  margin-left: 2vw;
   width:50px;
   height:50px;
   background: url("noun_176432_cc.png");
@@ -119,20 +119,20 @@ input {
 #party_list {
   float:left;
   width: 10vw;
-  margin-left: 5vw;
+  margin-left: 10vw;
   margin-right: 5vw;
   margin-top: 5px;
 }
 
 #search {
   float:left;
-  width: 60vw;
+  width: 50vw;
 }
 
 #playlist {
   float:right;
   width: 10vw;
-  margin-right: 5vw;
+  margin-right: 10vw;
   margin-top: 5px;
 }
 
