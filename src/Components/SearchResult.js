@@ -18,27 +18,33 @@ class SearchResult extends Component {
   }
 
   render() {
+    // there must be a better way of doing this, but applying the styles
+    // in CSS isn't working for some reason
     var styles = {
       overflow:"auto",
-      height:"20vh"
+      height:"45vh",
+      width: "60vw",
+      float:"left",
     }
 
     if (this.props.results != undefined && this.props.results.hasOwnProperty('items')) {
       return(
         <div>
+          <hr/>
           <div style={styles}>
             <table>
               <tr>
+                <th></th>
                 <th>Track</th>
                 <th>Artist</th>
                 <th>Album</th>
               </tr>
               {this.props.results.items.map((list_item) => {
                 return <tr>
+                  <td><button onClick={this.queue_item.bind(this,list_item["uri"])}>Add</button></td>
                   <td>{list_item["name"]}</td>
                   <td>{list_item["artists"][0].name}</td>
                   <td>{list_item["album"].name}</td>
-                  <td><button onClick={this.queue_item.bind(this,list_item["uri"])}>Add</button></td>
                 </tr>
               })}
             </table>

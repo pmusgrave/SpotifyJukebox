@@ -6,6 +6,7 @@ import Header from './Header.js';
 import Parties from './Parties.js';
 import Search from './Search.js';
 import TransportControls from './TransportControls.js';
+import CurrentTrack from './CurrentTrack.js'
 import Playlist from './Playlist.js';
 
 const request = require('browser-request');
@@ -279,24 +280,29 @@ class AuthenticatedApp extends Component {
       return (
         <div className="App">
           <Header />
-          <div>
-            <h3>Current Room: {this.state.room_name}</h3>
-            <h4>Who's here: </h4>
-            <div>
-              {this.state.user_list.map((list_item) => {
-                return <div>
-                  <label>{list_item}</label>
-                </div>
-              })}
+          <div className="body">
+            <div id="party_list">
+              <h3>Current Room: {this.state.room_name}</h3>
+              <h4>Who's here: </h4>
+              <div>
+                {this.state.user_list.map((list_item) => {
+                  return <div>
+                    <label>{list_item}</label>
+                  </div>
+                })}
+              </div>
+              <button type="button" onClick={this.handle_room_click.bind(this)}>Change Rooms</button>
             </div>
-            <button type="button" onClick={this.handle_room_click.bind(this)}>Change Rooms</button>
-            <hr/>
             <Search
               playlist={this.state.playlist}
               add_to_playlist={this.add_to_playlist}
               socket={this.socket}
               auth_keys={this.props.auth_keys}
             />
+            <Playlist current_track={this.state.player.item} playlist={this.state.playlist}/>
+          </div>
+          <div className="footer">
+            <hr/>
             <TransportControls
               playlist={this.state.playlist}
               playlist_next_track={this.playlist_next_track.bind(this)}
@@ -308,7 +314,7 @@ class AuthenticatedApp extends Component {
               socket={this.socket}
               auth_keys={this.props.auth_keys}
             />
-            <Playlist current_track={this.state.player.item} playlist={this.state.playlist}/>
+            <CurrentTrack current_track={this.state.player.item} playlist={this.state.playlist}/>
           </div>
         </div>
       );

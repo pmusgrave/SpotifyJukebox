@@ -2,6 +2,8 @@
   font-family: 'Montserrat', sans-serif;
   color: #c9e3ac;
   margin-bottom: 1px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 button {
@@ -41,23 +43,43 @@ input {
   border-style: solid;
 }
 
+.body {
+  height: auto;
+}
+
 .footer {
+  clear: both;
   position: fixed;
-  height: 165px;
+  height: 200px;
   left: 0;
   bottom: 0;
   width: 100%;
   text-align: center;
+  background-color: #34623F;
 }
 
-#PlayButton, #PauseButton, #NextButton {
-  position: fixed;
-  bottom: 180px;
+.CurrentTrack {
+  float:left;
+  text-align: center;
+  width: 60vw;
+  margin-right: 20vw;
+}
+
+#TransportControls {
+  float:left;
+  width:20vw;
+  margin-top: 50px;
+}
+
+#PlayButton, #PauseButton, #NextButton, {
+  float:left;
+  bottom: 50;
   text-align: center;
 }
 
 #PlayButton {
-  left:45vw;
+  float: left;
+  margin-left: 1vw;
   width:50px;
   height:50px;
   background: url("noun_243845_cc.png");
@@ -69,7 +91,8 @@ input {
 }
 
 #PauseButton {
-  left:45vw;
+  float: left;
+  margin-left: 1vw;
   width:50px;
   height:50px;
   background: url("noun_176432_cc.png");
@@ -81,7 +104,8 @@ input {
 }
 
 #NextButton {
-  left:52vw;
+  float: left;
+  margin-left: 10px;
   width:50px;
   height:50px;
   background: url("noun_256167_cc_smaller.png");
@@ -90,6 +114,26 @@ input {
   background-repeat: no-repeat;
   background-size: 70%;
   border-radius: 50%;
+}
+
+#party_list {
+  float:left;
+  width: 10vw;
+  margin-left: 5vw;
+  margin-right: 5vw;
+  margin-top: 5px;
+}
+
+#search {
+  float:left;
+  width: 60vw;
+}
+
+#playlist {
+  float:right;
+  width: 10vw;
+  margin-right: 5vw;
+  margin-top: 5px;
 }
 
 .App-logo {

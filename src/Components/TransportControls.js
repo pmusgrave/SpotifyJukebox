@@ -10,7 +10,7 @@ class TransportControls extends Component {
 
   render() {
     return(
-      <div>
+      <div id="TransportControls">
         <PlayPause
           auth_keys={this.props.auth_keys}
           player={this.props.player}

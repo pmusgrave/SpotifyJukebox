@@ -15,8 +15,8 @@ class Playlist extends Component {
     // first element
     if(this.props.current_track != null){
       return (
-        <div className="footer">
-          <h1>Current Track</h1>
+        <div id="playlist">
+          <h1>Playlist</h1>
           <h3>{this.props.current_track.name}</h3>
           <h4>{this.props.current_track.artists[0].name}</h4>
           <h5>{this.props.current_track.album.name}</h5>
@@ -24,8 +24,8 @@ class Playlist extends Component {
       );
     }
     else{
-      return(<div className="footer">
-        <h1>Current Track</h1>
+      return(<div id="playlist">
+        <h1>Playlist</h1>
       </div>
       )
     }

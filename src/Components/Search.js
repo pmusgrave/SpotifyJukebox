@@ -68,7 +68,7 @@ class Search extends Component {
 
   render() {
     return (
-      <div>
+      <div id="search">
         <form onSubmit={this.handleSubmit}>
           <label>
             Search:
@@ -86,7 +86,6 @@ class Search extends Component {
             socket={this.props.socket}
           />
         : null}
-        <hr/>
       </div>
     );
   }
