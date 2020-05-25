@@ -1,6 +1,9 @@
 {
   "name": "spotifyjukebox",
   "version": "0.1.0",
+  "engines": {
+    "node": "14.x.x"
+  },
   "private": true,
   "dependencies": {
     "browser-request": "^0.3.3",
@@ -9,11 +12,11 @@
     "react-dom": "^16.0.0",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.14",
+    "react-scripts": "^2.0.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
-    "socket.io": "^2.0.4",
-    "socket.io-client": "^2.0.4"
+    "socket.io": "1.7.0",
+    "socket.io-client": "1.7.0"
   },
   "scripts": {
     "start": "react-scripts start",
