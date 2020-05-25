@@ -39,7 +39,7 @@ var generateRandomString = function(length) {
 
 let stateKey = 'spotify_auth_state';
 let client_id = '68d49ecf355c49078720c714d2655b87';
-let redirect_uri = 'http://spotboxify.herokuapp.com';
+let redirect_uri = 'https://spotboxify.herokuapp.com/callback';
 let client_secret = 'da860300f95842e4a0a911d67528829b';
 
 /******************************************************

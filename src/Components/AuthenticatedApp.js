@@ -27,7 +27,7 @@ class AuthenticatedApp extends Component {
         scheduler_interval: 2500,
         timer: null
       };
-      this.socket = require('socket.io-client')('http://spotboxify.herokuapp.com');
+      this.socket = require('socket.io-client')('https://spotboxify.herokuapp.com');
       // this.socket = require('socket.io-client')('http://localhost:8888');
 
       this.socket.on('you_are_in', (client, handle, user_list, room_name) => {
