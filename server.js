@@ -37,8 +37,6 @@ var generateRandomString = function(length) {
   return text;
 };
 
-
-var stateKey = 'spotify_auth_state';
 let stateKey = 'spotify_auth_state';
 let client_id = '68d49ecf355c49078720c714d2655b87';
 let redirect_uri = 'http://spotboxify.herokuapp.com';
