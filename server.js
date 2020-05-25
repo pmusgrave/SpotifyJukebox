@@ -322,6 +322,6 @@ function room_auth(join) {
 /******************************************************
                   HTTP SERVER
 ******************************************************/
-http.listen(80, function(){
-  console.log('listening on port 80');
+http.listen(process.env.PORT || 3000, function(){
+  console.log('listening on port' + process.env.PORT);
 });
