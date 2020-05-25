@@ -13,8 +13,9 @@ var query_string = require('query-string');
 
 var parsed_hash = query_string.parse(window.location.hash);
 var auth_keys = {
-  redirect_uri: 'http://psmusgrave.com:80/callback', // Your redirect uri
+  // redirect_uri: 'http://psmusgrave.com:80/callback', // Your redirect uri
   // redirect_uri: 'http://localhost:8888/callback', // Your redirect uri
+  redirect_uri: 'http://spotboxify.herokuapp.com/callback',
   stateKey: 'spotify_auth_state',
   access_token: parsed_hash['access_token'],
   refresh_token: parsed_hash['refresh_token']

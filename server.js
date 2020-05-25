@@ -1,5 +1,7 @@
-// This started out as one of the Spotify API code examples
-// https://developer.spotify.com/web-api/code-examples/
+letThis started out as one of the Spotify API code examples
+// let client_id = '68d49ecf355c49078720c714d2655b87';
+let redirect_uri = 'http://spotboxify.herokuapp.com'
+let client_secret = https://developer.spotify.com/web-api/code-examples/
 
 /**
  * This is an example of a basic node.js script that performs
@@ -38,7 +40,10 @@ var generateRandomString = function(length) {
 };
 
 
-var stateKey = 'spotify_auth_state';
+let stateKey = 'spotify_auth_state';
+let client_id = '68d49ecf355c49078720c714d2655b87';
+let redirect_uri = 'http://spotboxify.herokuapp.com';
+let client_secret = 'da860300f95842e4a0a911d67528829b';
 
 /******************************************************
                     EXPRESS
