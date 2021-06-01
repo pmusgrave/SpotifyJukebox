@@ -1,26 +1,18 @@
 // This started out as one of the Spotify API code examples
 // https://developer.spotify.com/web-api/code-examples/
+require('dotenv').config();
+let express = require('express');
+let app = express();
+let http = require('http').Server(app);
+let io = require('socket.io')(http);
+let request = require('request');
 
-/**
- * This is an example of a basic node.js script that performs
- * the Authorization Code oAuth2 flow to authenticate against
- * the Spotify Accounts.
- *
- * For more information, read
- * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
- */
+let querystring = require('querystring');
+let cookieParser = require('cookie-parser');
 
-var express = require('express');
-var app = express(); // Express web server framework
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var request = require('request'); // "Request" library
-//   ^^^ watch out not to confuse request object with req callback arg
-// naming could be improved for clarity
-
-var querystring = require('querystring');
-var cookieParser = require('cookie-parser');
-
+let client_id = process.env.SPOTIFY_CLIENT_ID;
+let client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+let redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
 
 /**
  * Generates a random string containing numbers and letters
@@ -54,14 +46,14 @@ app.use(express.static(__dirname + '/build'));
 app.use(cookieParser());
 
 app.get('/', nocache, function(req, res) {
-  console.log('yo root');
+  console.log('GET /');
   // res.sendFile(__dirname + '/reactindex.html');
-  // res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/index.html');
   // res.sendFile(__dirname + '/test.html');
 });
 
 app.get('/login', nocache, function(req, res) {
-  console.log('logging in');
+  console.log('GET /login');
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
@@ -78,6 +70,7 @@ app.get('/login', nocache, function(req, res) {
 });
 
 app.get('/callback', nocache, function(req, res) {
+  console.log('GET /callback');
 
   // your application requests refresh and access tokens
   // after checking the state parameter
@@ -136,7 +129,6 @@ app.get('/callback', nocache, function(req, res) {
 });
 
 app.get('/refresh_token', nocache, function(req, res) {
-
   // requesting access token from refresh token
   var refresh_token = req.query.refresh_token;
   var authOptions = {
@@ -183,7 +175,6 @@ class Room {
   }
 }
 
-// will improve instead of iterating through linearly, this is just quick and dirty
 function get_room(room_name) {
   for(let i = 0; i < rooms.length; i++) {
     if(rooms[i].name == room_name){
@@ -316,10 +307,9 @@ function room_auth(join) {
   }
 }
 
-
 /******************************************************
                   HTTP SERVER
 ******************************************************/
-http.listen(80, function(){
-  console.log('listening on port 80');
+http.listen(process.env.PORT, () => {
+  console.log(`listening on port ${process.env.PORT}`);
 });
