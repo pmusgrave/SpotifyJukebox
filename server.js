@@ -69,8 +69,8 @@ app.get('/login', nocache, (req, res) => {
   );
 });
 
-app.post('/callback', nocache, (req, res) => {
-  console.log(`${(new Date).toISOString()}: POST /callback`);
+app.post('/access_token', nocache, (req, res) => {
+  console.log(`${(new Date).toISOString()}: POST /access_token`);
   let { code, state } = req.headers;
   let storedState = req.cookies ? req.cookies[state_key] : null;
 
@@ -81,7 +81,7 @@ app.post('/callback', nocache, (req, res) => {
       }));
   } else {
     res.clearCookie(state_key);
-    var authOptions = {
+    var auth_options = {
       url: 'https://accounts.spotify.com/api/token',
       form: {
         code: code,
@@ -94,7 +94,7 @@ app.post('/callback', nocache, (req, res) => {
       json: true
     };
 
-    request.post(authOptions, (error, response, body) => {
+    request.post(auth_options, (error, response, body) => {
       if (!error && res.statusCode === 200) {
         let access_token = body.access_token;
         let refresh_token = body.refresh_token;
@@ -120,22 +120,22 @@ app.post('/callback', nocache, (req, res) => {
   }
 });
 
-app.get('/refresh_token', nocache, function(req, res) {
-  // requesting access token from refresh token
-  var refresh_token = req.query.refresh_token;
-  var authOptions = {
+app.post('/refresh_token', nocache, function(req, res) {
+  console.log(`${(new Date).toISOString()}: POST /refresh_token`);
+  let { refresh_token } = req.headers;
+  let auth_options = {
     url: 'https://accounts.spotify.com/api/token',
     headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
     form: {
       grant_type: 'refresh_token',
-      refresh_token: refresh_token
+      refresh_token: refresh_token,
     },
     json: true
   };
 
-  request.post(authOptions, function(error, res, body) {
-    if (!error && res.statusCode === 200) {
-      var access_token = body.access_token;
+  request.post(auth_options, function(error, auth_res, body) {
+    if (!error && auth_res.statusCode === 200) {
+      let access_token = body.access_token;
       res.send({
         'access_token': access_token
       });
@@ -151,7 +151,7 @@ app.get('/*', nocache, (req, res) => {
 /******************************************************
                    SOCKET.IO
 ******************************************************/
-var clients = new Map();
+let clients = new Map();
 class Client {
     constructor(socket) {
       this.socket = socket,
@@ -162,7 +162,7 @@ class Client {
 
 // Would prefer to use a map for rooms, but socket.io does not allow
 // transmitting map types. Using array of objects instead.
-var rooms = [];
+let rooms = [];
 class Room {
   constructor(room_name) {
     this.name = room_name;

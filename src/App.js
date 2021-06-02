@@ -28,16 +28,38 @@ class App extends Component {
     });
     if (parsed_params['error'] === undefined && parsed_params['code'] !== undefined) {
       this.setState({ authorization: parsed_params});
-      this.get_token(parsed_params);
+      this.get_access_token(parsed_params);
     }
   }
 
-  get_token(params) {
+  get_access_token(params) {
     let options = {
-      url: 'http://localhost:3000/callback',
+      url: 'http://localhost:3000/access_token',
       method: 'POST',
       json: true,
       headers: params,
+    };
+
+    request(options, (err,res,body) => {
+      if (body.access_token !== undefined && body.refresh_token !== undefined) {
+        this.setState({
+          access_token: body.access_token,
+          refresh_token: body.refresh_token,
+          authenticated: true,
+        });
+        this.schedule_token_refresh();
+      }
+    });
+  }
+
+  get_refresh_token() {
+    let options = {
+      url: 'http://localhost:3000/refresh_token',
+      method: 'POST',
+      json: true,
+      headers: {
+        refresh_token: this.state.refresh_token,
+      },
     };
 
     request(options, (err,res,body) => {
@@ -51,11 +73,18 @@ class App extends Component {
     });
   }
 
+  schedule_token_refresh() {
+    setInterval(this.get_refresh_token.bind(this), 600000);
+  }
+
   render() {
     if (this.state.authenticated) {
       return (
         <Router>
-          <Route exact path='/' component={AuthenticatedApp} />
+          <Route exact path='/'
+          render={(props) => <AuthenticatedApp {...props} 
+            auth_keys={{access_token:this.state.access_token, refresh_token: this.state.refresh_token }} />}
+          />
         </Router>
       );
     } else {
@@ -67,30 +96,5 @@ class App extends Component {
     }
   }
 }
-
-// function refresh_token() {
-//
-//   // requesting access token from refresh token
-//   var refresh_token = req.query.refresh_token;
-//   var authOptions = {
-//     url: 'https://accounts.spotify.com/api/token',
-//     headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
-//     form: {
-//       grant_type: 'refresh_token',
-//       refresh_token: refresh_token
-//     },
-//     json: true
-//   };
-//
-//   request.post(authOptions, function(error, response, body) {
-//     if (!error && response.statusCode === 200) {
-//       var access_token = body.access_token;
-//       res.send({
-//         'access_token': access_token
-//       });
-//     }
-//   });
-// }
-
 
 export default App;
