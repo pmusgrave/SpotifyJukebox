@@ -1,99 +1,70 @@
-
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
 import logo from './logo.jpg';
 import './App.css';
-import Header from './Components/Header.js';
-import Login from './Components/Login.js';
+import AuthenticatedApp from './Components/AuthenticatedApp.js';
 import DeviceSelector from './Components/DeviceSelector.js';
+import Header from './Components/Header.js';
+import LandingPage from './Components/LandingPage.js';
+import Login from './Components/Login.js';
+
 
 const request = require('browser-request');
-
-var query_string = require('query-string');
-
-var parsed_hash = query_string.parse(window.location.hash);
-var auth_keys = {
-  redirect_uri: 'http://psmusgrave.com:80/callback', // Your redirect uri
-  // redirect_uri: 'http://localhost:8888/callback', // Your redirect uri
-  stateKey: 'spotify_auth_state',
-  access_token: parsed_hash['access_token'],
-  refresh_token: parsed_hash['refresh_token']
-}
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
       authenticated: false,
-      product: ''
+      product: '',
     }
-
-    this.authentication_scheduler();
-  }
-  // componentDidMount() {
-  //   socket.on('server:event', data => {
-  //     console.log('hi io');
-  //   })
-  // }
-
-  authentication_scheduler(){
-    setInterval(() => {
-      this.set_authenticated_state()
-    }, 900000)
   }
 
-  set_authenticated_state() {
-    // it might be okay to simply check if access_token != 'invalid_token'
+  componentDidMount() {
+    let params = new URLSearchParams(window.location.search);
+    let parsed_params = {};
+    params.forEach((value, key) => {
+      parsed_params[key] = value;
+    });
+    if (parsed_params['error'] === undefined && parsed_params['code'] !== undefined) {
+      this.setState({ authorization: parsed_params});
+      this.get_token(parsed_params);
+    }
+  }
 
-    // currently calling this function initially until login is successful,
-    // then calling it on a 15 minute interval
-
+  get_token(params) {
     let options = {
-      url: 'https://api.spotify.com/v1/me',
-      headers: { 'Authorization': 'Bearer ' + auth_keys.access_token },
-      json: true
+      url: 'http://localhost:3000/callback',
+      method: 'POST',
+      json: true,
+      headers: params,
     };
 
-    request.get(options, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-          this.setState({
-            authenticated: true,
-            product: body.product
-          });
-        }
-        else {
-          this.setState({authenticated: false});
-        }
+    request(options, (err,res,body) => {
+      if (body.access_token !== undefined && body.refresh_token !== undefined) {
+        this.setState({
+          access_token: body.access_token,
+          refresh_token: body.refresh_token,
+          authenticated: true,
+        });
+      }
     });
   }
 
   render() {
-    if(this.state.authenticated && this.state.product == 'premium') {
+    if (this.state.authenticated) {
       return (
-          <DeviceSelector auth_keys={auth_keys}/>
+        <Router>
+          <Route exact path='/' component={AuthenticatedApp} />
+        </Router>
+      );
+    } else {
+      return (
+        <Router>
+          <Route exact path='/' component={LandingPage} />
+        </Router>
       );
     }
-    else if(this.state.authenticated && this.state.product != 'premium') {
-      return (
-        <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Spotify Jukebox</h1>
-          </header>
-          <h4>Sorry! This app requires Spotify Premium.</h4>
-        </div>
-      );
-    }
-    else {
-      this.set_authenticated_state(); //this is bad
-      return (
-        <div className="App">
-          <Header />
-          <Login />
-        </div>
-      );
-    }
-
   }
 }
 
