@@ -34,7 +34,7 @@ class App extends Component {
 
   get_access_token(params) {
     let options = {
-      url: 'http://localhost:3000/access_token',
+      url: `${process.env.REACT_APP_HOST_URL}/access_token`,
       method: 'POST',
       json: true,
       headers: params,
@@ -54,7 +54,7 @@ class App extends Component {
 
   get_refresh_token() {
     let options = {
-      url: 'http://localhost:3000/refresh_token',
+      url: `${process.env.REACT_APP_HOST_URL}/refresh_token`,
       method: 'POST',
       json: true,
       headers: {

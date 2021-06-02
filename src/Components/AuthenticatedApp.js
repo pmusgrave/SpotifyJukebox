@@ -27,8 +27,7 @@ class AuthenticatedApp extends Component {
         scheduler_interval: 2500,
         timer: null
       };
-      this.socket = require('socket.io-client')('http://localhost:3000');
-      // this.socket = require('socket.io-client')('http://localhost:8888');
+      this.socket = require('socket.io-client')(process.env.REACT_APP_HOST_URL);
 
       this.socket.on('you_are_in', (client, handle, user_list, room_name) => {
         console.log(handle)

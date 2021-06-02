@@ -7,7 +7,7 @@ const request = require('browser-request');
 class Login extends Component {
   render() {
     return (
-      <a href="http://localhost:3000/login">Login to Spotify</a>
+      <a href={`${process.env.REACT_APP_HOST_URL}/login`}>Login to Spotify</a>
     );
   }
 }
