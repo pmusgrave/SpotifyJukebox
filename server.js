@@ -6,6 +6,7 @@ let app = express();
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
 let request = require('request');
+const path = require('path');
 
 let querystring = require('querystring');
 let cookieParser = require('cookie-parser');
@@ -106,6 +107,7 @@ app.post('/access_token', nocache, (req, res) => {
         };
         request.get(options, (auth_error, auth_res, body) => {});
 
+        console.log('here', access_token, refresh_token);
         res.send({
           access_token: access_token,
           refresh_token: refresh_token
@@ -143,9 +145,16 @@ app.post('/refresh_token', nocache, function(req, res) {
   });
 });
 
+app.use(express.static(path.join(__dirname,'/build')));
+app.get('/', nocache, (req, res) => {
+  console.log(`${(new Date).toISOString()}: GET ${req.path}`);
+  res.header('Content-Type', 'text/html');
+  res.sendFile(__dirname + '/build' + req.path);
+});
 app.get('/*', nocache, (req, res) => {
   console.log(`${(new Date).toISOString()}: GET ${req.path}`);
-  res.sendFile(__dirname + '/build' + req.path);
+  res.header('Content-Type', 'text/html');
+  res.sendFile(__dirname + '/build/index.html');
 });
 
 /******************************************************

@@ -63,6 +63,7 @@ class App extends Component {
     };
 
     request(options, (err,res,body) => {
+      console.log(body)
       if (body.access_token !== undefined && body.refresh_token !== undefined) {
         this.setState({
           access_token: body.access_token,
@@ -81,7 +82,7 @@ class App extends Component {
     if (this.state.authenticated) {
       return (
         <Router>
-          <Route exact path='/'
+          <Route path='/'
           render={(props) => <AuthenticatedApp {...props} 
             auth_keys={{access_token:this.state.access_token, refresh_token: this.state.refresh_token }} />}
           />
@@ -90,7 +91,7 @@ class App extends Component {
     } else {
       return (
         <Router>
-          <Route exact path='/' component={LandingPage} />
+          <Route path='/' component={LandingPage} />
         </Router>
       );
     }
